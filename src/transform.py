@@ -42,7 +42,7 @@ def enrich_article(article: dict) -> dict:
         )
     ).lower()
 
-    election_keywords = [
+    politics_keywords = [
         "val",
         "regering",
         "riksdag",
@@ -53,9 +53,9 @@ def enrich_article(article: dict) -> dict:
         "politik",
     ]
 
-    enriched_article["is_election_related"] = any(
+    enriched_article["is_politics_related"] = any(
         keyword in text
-        for keyword in election_keywords
+        for keyword in politics_keywords
     )
 
     return enriched_article
