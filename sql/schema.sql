@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS articles (
     published_at TIMESTAMPTZ NOT NULL,
     author TEXT,
     category TEXT,
-    is_politics_related BOOLEAN
+    is_politics_related BOOLEAN NOT NULL
 );

@@ -1,6 +1,7 @@
 from src.extract import extract_rss, SVT_RSS_URL
 from src.transform import transform_articles
 from src.validate import validate_articles
+from src.load import create_connection
 
 
 def main() -> None:
@@ -16,9 +17,13 @@ def main() -> None:
     print(f"Valid: {len(valid_articles)}")
     print(f"Politics related: {len(politics_articles)}")
 
-    for key, value in transformed_articles[0].items():
-        print(f"\n{key}:")
-        print(value)
+    # for key, value in transformed_articles[0].items():
+    #     print(f"\n{key}:")
+    #     print(value)
+
+    connection = create_connection()
+    print("Connected!")
+    connection.close()
 
 
 if __name__ == "__main__":
