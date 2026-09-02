@@ -1,5 +1,7 @@
+from src.models import Article
 
-def validate_article(article: dict) -> bool:
+
+def validate_article(article: Article) -> bool:
     required_fields = [
         "source",
         "title",
@@ -14,7 +16,7 @@ def validate_article(article: dict) -> bool:
     return True
 
 
-def validate_articles(articles: list[dict]) -> list[dict]:
+def validate_articles(articles: list[Article]) -> list[Article]:
     valid_articles = []
 
     for article in articles:

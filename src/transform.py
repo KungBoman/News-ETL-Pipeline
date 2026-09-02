@@ -1,43 +1,45 @@
 from datetime import datetime
 
+from src.models import Article
 
-def clean_article(article: dict) -> dict:
-    clean_article = article.copy()
+
+def clean_article(article: Article) -> Article:
+    cleaned_article = article.copy()
 
     for field in ["title", "description", "url", "author", "category"]:
-        value = clean_article.get(field)
+        value = cleaned_article.get(field)
 
         if isinstance(value, str):
             value = value.strip()
 
-        clean_article[field] = value if value else None
+        cleaned_article[field] = value if value else None
 
-    return clean_article
+    return cleaned_article
 
 
-def standardize_article(article: dict) -> dict:
-    std_article = article.copy()
+def standardize_article(article: Article) -> Article:
+    standardized_article = article.copy()
 
-    published_at = std_article.get("published_at")
+    published_at = standardized_article["published_at"]
 
-    if published_at:
-        std_article["published_at"] = datetime.strptime(
+    if isinstance(published_at, str):
+        standardized_article["published_at"] = datetime.strptime(
             published_at,
             "%a, %d %b %Y %H:%M:%S %z"
         )
 
-    return std_article
+    return standardized_article
 
 
-def enrich_article(article: dict) -> dict:
+def enrich_article(article: Article) -> Article:
     enriched_article = article.copy()
 
     text = " ".join(
         filter(
             None,
             [
-                enriched_article.get("title"),
-                enriched_article.get("description"),
+                enriched_article["title"],
+                enriched_article["description"],
             ],
         )
     ).lower()
@@ -61,7 +63,7 @@ def enrich_article(article: dict) -> dict:
     return enriched_article
 
 
-def transform_articles(articles: list[dict]) -> list[dict]:
+def transform_articles(articles: list[Article]) -> list[Article]:
     transformed_articles = []
 
     for article in articles:
