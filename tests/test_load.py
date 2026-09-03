@@ -5,19 +5,7 @@ from unittest.mock import MagicMock
 
 from src.load import load_article, load_articles
 from src.models import Article
-
-
-def make_test_article() -> Article:
-    return {
-        "source": "SVT",
-        "title": "Test article",
-        "description": "Test description",
-        "url": "https://example.com",
-        "published_at": datetime(2026, 9, 2, 16, 29, 5),
-        "author": None,
-        "category": None,
-        "is_politics_related": False,
-    }
+from tests.test_helpers import make_test_article
 
 
 def test_load_article():

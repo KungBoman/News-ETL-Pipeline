@@ -63,6 +63,20 @@ def enrich_article(article: Article) -> Article:
     return enriched_article
 
 
+def deduplicate_articles(articles: list[Article]) -> list[Article]:
+    seen_urls = set()
+    unique_articles = []
+
+    for article in articles:
+        url = article["url"]
+
+        if url not in seen_urls:
+            seen_urls.add(url)
+            unique_articles.append(article)
+
+    return unique_articles
+
+
 def transform_articles(articles: list[Article]) -> list[Article]:
     transformed_articles = []
 
@@ -72,5 +86,7 @@ def transform_articles(articles: list[Article]) -> list[Article]:
         article = enrich_article(article)
 
         transformed_articles.append(article)
+
+    transformed_articles = deduplicate_articles(transformed_articles)
 
     return transformed_articles

@@ -1,5 +1,8 @@
 from datetime import datetime
 
+from tests.test_helpers import make_test_article
+from src.transform import deduplicate_articles
+
 from src.transform import (
     clean_article,
     standardize_article,
@@ -70,3 +73,17 @@ def test_enrich_article_not_politics_related():
     result = enrich_article(article)
 
     assert result["is_politics_related"] is False
+
+
+def test_deduplicate_articles():
+    articles = [
+        make_test_article(url="https://example.com/1"),
+        make_test_article(url="https://example.com/1"),
+        make_test_article(url="https://example.com/2"),
+    ]
+
+    result = deduplicate_articles(articles)
+
+    assert len(result) == 2
+    assert result[0]["url"] == "https://example.com/1"
+    assert result[1]["url"] == "https://example.com/2"
