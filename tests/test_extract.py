@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from src.config import RSS_SOURCES
 from src.extract import extract_rss
 
 
@@ -29,3 +30,17 @@ def test_extract_rss():
     assert result[0]["title"] == "Test article"
     assert result[0]["description"] == "Test description"
     assert result[0]["url"] == "https://example.com"
+
+
+def test_all_rss_sources():
+    for source in RSS_SOURCES:
+        articles = extract_rss(
+            source["url"],
+            source["name"],
+        )
+
+        assert len(articles) > 0
+        assert all(
+            article["source"] == source["name"]
+            for article in articles
+        )
