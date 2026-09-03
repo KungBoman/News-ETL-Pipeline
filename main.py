@@ -2,10 +2,19 @@ from src.extract import extract_rss, SVT_RSS_URL
 from src.transform import transform_articles
 from src.validate import validate_articles
 from src.load import create_connection, load_articles
+from src.config import RSS_SOURCES
 
 
 def main() -> None:
-    articles = extract_rss(SVT_RSS_URL, "SVT")
+    articles = []
+    for source in RSS_SOURCES:
+        source_articles = extract_rss(
+            source["url"],
+            source["name"],
+        )
+
+        articles.extend(source_articles)
+
     print(f"Extracted: {len(articles)} articles")
 
     transformed_articles = transform_articles(articles)
@@ -22,8 +31,8 @@ def main() -> None:
     connection = create_connection()
 
     try:
-        load_articles(connection, valid_articles, commit=True)
-        print(f"Loaded: {len(valid_articles)} articles")
+        loaded_articles = load_articles(connection, valid_articles, commit=True)
+        print(f"Loaded: {loaded_articles} articles")
     finally:
         connection.close()
 

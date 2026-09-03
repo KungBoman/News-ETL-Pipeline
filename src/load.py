@@ -17,7 +17,7 @@ def create_connection() -> psycopg.Connection:
     )
 
 
-def load_article(connection: psycopg.Connection, article: Article, commit: bool) -> None:
+def load_article(connection: psycopg.Connection, article: Article, commit: bool) -> bool:
     query = """
         INSERT INTO articles (
             source,
@@ -33,6 +33,7 @@ def load_article(connection: psycopg.Connection, article: Article, commit: bool)
             %s, %s, %s, %s, %s, %s, %s, %s
         )
         ON CONFLICT (url) DO NOTHING
+        RETURNING id
     """
 
     with connection.cursor() as cursor:
@@ -49,19 +50,37 @@ def load_article(connection: psycopg.Connection, article: Article, commit: bool)
                 article["is_politics_related"],
             ),
         )
+
+        result = cursor.fetchone()
+
     if commit:
         connection.commit()
 
+    return result is not None
+
 
 def load_articles(connection: psycopg.Connection, articles: list[Article], commit: bool) -> None:
+    inserted = 0
+    duplicates = 0
+
     try:
         for article in articles:
-            load_article(connection, article, commit=False)
+            was_inserted = load_article(connection, article, commit=False)
+
+            if was_inserted:
+                inserted += 1
+            else:
+                duplicates += 1
 
         if commit:
             connection.commit()
 
-        logger.info(f"Loaded {len(articles)} articles")
+        logger.info(
+            f"Loaded {inserted} articles, "
+            f"skipped {duplicates} duplicates"
+        )
+
+        return inserted
 
     except Exception:
         connection.rollback()

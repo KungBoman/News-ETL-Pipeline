@@ -1,4 +1,5 @@
-from datetime import datetime
+import feedparser
+from datetime import datetime, timezone
 
 from src.models import Article
 
@@ -23,10 +24,17 @@ def standardize_article(article: Article) -> Article:
     published_at = standardized_article["published_at"]
 
     if isinstance(published_at, str):
-        standardized_article["published_at"] = datetime.strptime(
-            published_at,
-            "%a, %d %b %Y %H:%M:%S %z"
-        )
+        parsed_time = feedparser._parse_date(published_at)
+
+        if parsed_time:
+            standardized_article["published_at"] = datetime(
+                *parsed_time[:6],
+                tzinfo=timezone.utc,
+            )
+        else:
+            raise ValueError(
+                f"Could not parse published_at: {published_at}"
+            )
 
     return standardized_article
 
