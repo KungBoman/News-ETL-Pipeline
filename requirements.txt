@@ -1,3 +1,4 @@
 feedparser
 pytest
 psycopg[binary,pool]
+python-dotenv

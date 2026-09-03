@@ -1,4 +1,5 @@
 env
+.env
 project_requirements.md
 __pycache__
 docs/project_notes.md

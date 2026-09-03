@@ -1,18 +1,22 @@
 import psycopg
+import os
 
 from src.logger import get_logger
 from src.models import Article
+from dotenv import load_dotenv
 
 logger = get_logger(__name__)
+
+load_dotenv()
 
 
 def create_connection() -> psycopg.Connection:
     return psycopg.connect(
-        host="localhost",
-        port=5432,
-        dbname="news",
-        user="news_user",
-        password="news_password",
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
     )
 
 
