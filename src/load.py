@@ -1,22 +1,19 @@
 import psycopg
-import os
 
 from src.logger import get_logger
 from src.models import Article
-from dotenv import load_dotenv
+import src.common_util as cu
 
 logger = get_logger(__name__)
-
-load_dotenv()
 
 
 def create_connection() -> psycopg.Connection:
     return psycopg.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
+        host=cu.get_required_env("DB_HOST"),
+        port=cu.get_required_env("DB_PORT"),
+        dbname=cu.get_required_env("DB_NAME"),
+        user=cu.get_required_env("DB_USER"),
+        password=cu.get_required_env("DB_PASSWORD"),
     )
 
 
