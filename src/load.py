@@ -1,6 +1,9 @@
 import psycopg
 
+from src.logger import get_logger
 from src.models import Article
+
+logger = get_logger(__name__)
 
 
 def create_connection() -> psycopg.Connection:
@@ -50,8 +53,16 @@ def load_article(connection: psycopg.Connection, article: Article, commit: bool)
 
 
 def load_articles(connection: psycopg.Connection, articles: list[Article], commit: bool) -> None:
-    for article in articles:
-        load_article(connection, article, commit=False)
+    try:
+        for article in articles:
+            load_article(connection, article, commit=False)
 
-    if commit:
-        connection.commit()
+        if commit:
+            connection.commit()
+
+        logger.info(f"Loaded {len(articles)} articles")
+
+    except Exception:
+        connection.rollback()
+        logger.exception("Failed to load articles")
+        raise

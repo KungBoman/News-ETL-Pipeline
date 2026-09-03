@@ -1,25 +1,40 @@
 import feedparser
 
+from src.logger import get_logger
 from src.models import Article
 
 
 SVT_RSS_URL = "http://www.svt.se/nyheter/sverige/rss.xml"
 
+logger = get_logger(__name__)
+
 
 def extract_rss(url: str, source: str) -> list[Article]:
-    feed = feedparser.parse(url)
+    logger.info(f"Starting extraction from {source}")
 
-    articles: list[Article] = []
+    try:
+        feed = feedparser.parse(url)
 
-    for entry in feed.entries:
-        articles.append({
-            "source": source,
-            "title": entry.get("title"),
-            "description": entry.get("description"),
-            "url": entry.get("link"),
-            "published_at": entry.get("published"),
-            "author": entry.get("author"),
-            "category": entry.get("category"),
-        })
+        if feed.bozo:
+            logger.warning(f"RSS feed for {source} may be malformed")
 
-    return articles
+        articles: list[Article] = []
+
+        for entry in feed.entries:
+            articles.append({
+                "source": source,
+                "title": entry.get("title"),
+                "description": entry.get("description"),
+                "url": entry.get("link"),
+                "published_at": entry.get("published"),
+                "author": entry.get("author"),
+                "category": entry.get("category"),
+            })
+
+        logger.info(f"Extracted {len(articles)} articles from {source}")
+
+        return articles
+
+    except Exception:
+        logger.exception(f"Failed to extract articles from {source}")
+        raise
