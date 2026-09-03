@@ -6,6 +6,7 @@ from src.extract import extract_rss
 class MockFeed:
     def __init__(self, entries):
         self.entries = entries
+        self.bozo = True
 
 
 def test_extract_rss():
