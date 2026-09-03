@@ -1,7 +1,9 @@
+import pytest
+
 from datetime import datetime
 from unittest.mock import MagicMock
 
-from src.load import load_article
+from src.load import load_article, load_articles
 from src.models import Article
 
 
@@ -50,9 +52,25 @@ def test_load_articles():
         make_test_article(),
     ]
 
-    from src.load import load_articles
-
     load_articles(connection, articles, commit=True)
 
     assert connection.cursor.call_count == 2
     connection.commit.assert_called_once()
+
+
+def test_load_articles_rolls_back_on_error():
+    connection = MagicMock()
+
+    connection.cursor.return_value.__enter__.return_value.execute.side_effect = (
+        Exception("Database error")
+    )
+
+    articles = [
+        make_test_article(),
+    ]
+
+    with pytest.raises(Exception, match="Database error"):
+        load_articles(connection, articles, commit=True)
+
+    connection.rollback.assert_called_once()
+    connection.commit.assert_not_called()
