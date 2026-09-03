@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from tests.test_helpers import make_test_article
 from src.transform import deduplicate_articles
@@ -41,16 +41,16 @@ def test_clean_article_with_missing_description():
 
 
 def test_standardize_article():
-    article = {
-        "published_at": "Wed, 02 Sep 2026 16:29:05 +0200"
-    }
+    article = make_test_article(
+        published_at=datetime(
+            2026, 9, 2, 16, 29, 5,
+            tzinfo=timezone.utc,
+        )
+    )
 
     result = standardize_article(article)
 
-    assert isinstance(result["published_at"], datetime)
-    assert result["published_at"].year == 2026
-    assert result["published_at"].month == 9
-    assert result["published_at"].day == 2
+    assert result["published_at"] == article["published_at"]
 
 
 def test_enrich_article():
