@@ -38,6 +38,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Create databse schema
+        run: |
+          PGPASSWORD=news_password psql \
+            -h localhost \
+            -U news_user \
+            -d news \
+            -f sql/schema.sql
+
       - name: Run tests
         run: pytest
 
@@ -55,3 +63,12 @@ jobs:
         with:
           name: news-etl
           path: news-etl.zip
+
+      - name: Run pipeline
+        env:
+          DB_HOST: localhols
+          DB_PORT: 5432
+          DB_NAME: news
+          DB_USER: news_user
+          DB_PASSWORD: news_password
+        run: python main.py
