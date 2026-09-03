@@ -87,6 +87,4 @@ def transform_articles(articles: list[Article]) -> list[Article]:
 
         transformed_articles.append(article)
 
-    transformed_articles = deduplicate_articles(transformed_articles)
-
-    return transformed_articles
+    return deduplicate_articles(transformed_articles)
