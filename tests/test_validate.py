@@ -1,7 +1,8 @@
 from src.validate import validate_article
+from src.models import Article
 
 
-def make_test_article() -> dict:
+def make_test_article() -> Article:
     return {
         "source": "SVT",
         "title": "Test article",

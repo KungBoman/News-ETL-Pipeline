@@ -10,4 +10,4 @@ class Article(TypedDict):
     published_at: datetime
     author: str | None
     category: str | None
-    is_politics_related: bool
+    is_politics_related: NotRequired[bool]

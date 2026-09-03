@@ -20,7 +20,6 @@ def extract_rss(url: str, source: str) -> list[Article]:
             "published_at": entry.get("published"),
             "author": entry.get("author"),
             "category": entry.get("category"),
-            "is_politics_related": False,
         })
 
     return articles
