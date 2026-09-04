@@ -13,8 +13,8 @@ def test_get_articles(db_connection):
     )
 
     assert len(articles) == 3
-    assert articles[0]["source"] == "SVT"
-    assert articles[0]["title"] == "Test article"
+    assert articles[0][1] == "SVT"
+    assert articles[0][2] == "Test article 1"
 
 
 def test_get_articles_with_pagination(db_connection):
