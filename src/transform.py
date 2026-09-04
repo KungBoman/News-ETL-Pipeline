@@ -1,6 +1,4 @@
-from datetime import datetime, timezone
 
-import feedparser  # type: ignore[import-untyped]
 
 from src.models import Article
 
