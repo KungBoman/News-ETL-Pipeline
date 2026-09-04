@@ -1,4 +1,5 @@
 import psycopg
+import time
 
 from src.logger import get_logger
 from src.models import Article
@@ -14,7 +15,41 @@ def create_connection() -> psycopg.Connection:
         dbname=cu.get_required_env("DB_NAME"),
         user=cu.get_required_env("DB_USER"),
         password=cu.get_required_env("DB_PASSWORD"),
+        connect_timeout=1,
     )
+
+
+def try_create_connection(
+    max_attempts: int = 5,
+    retry_delay: int = 5,
+) -> psycopg.Connection:
+
+    for attempt in range(1, max_attempts + 1):
+        logger.info(
+            f"Connecting to PostgreSQL... "
+            f"(attempt {attempt}/{max_attempts})"
+        )
+
+        try:
+            connection = create_connection()
+
+            logger.info("Connected to PostgreSQL")
+            return connection
+
+        except psycopg.OperationalError as error:
+            if attempt == max_attempts:
+                logger.error(
+                    f"Could not connect to PostgreSQL after "
+                    f"{max_attempts} attempts: {error}"
+                )
+                raise
+
+            logger.warning(
+                f"Could not connect to PostgreSQL. "
+                f"Retrying in {retry_delay} seconds..."
+            )
+
+            time.sleep(retry_delay)
 
 
 def load_article(connection: psycopg.Connection, article: Article, commit: bool) -> bool:

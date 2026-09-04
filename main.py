@@ -1,13 +1,26 @@
+import psycopg
+
 from src.pipeline import run_pipeline
+from src.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def main() -> None:
-    stats = run_pipeline()
+    try:
+        stats = run_pipeline()
 
-    print(f"Extracted: {stats['extracted']} articles")
-    print(f"Transformed: {stats['transformed']} articles")
-    print(f"Valid: {stats['valid']} articles")
-    print(f"Loaded: {stats['loaded']} articles")
+        print(f"Extracted: {stats['extracted']} articles")
+        print(f"Transformed: {stats['transformed']} articles")
+        print(f"Valid: {stats['valid']} articles")
+        print(f"Loaded: {stats['loaded']} articles")
+
+    except psycopg.OperationalError as error:
+        print(f"Database connection failed: {error}")
+        raise SystemExit(1)
+
+    except KeyboardInterrupt:
+        logger.info("Quitting...")
 
 
 if __name__ == "__main__":

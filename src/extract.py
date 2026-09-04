@@ -23,7 +23,7 @@ def parse_published_at(entry) -> datetime | None:
 
 
 def extract_rss(url: str, source: str) -> list[Article]:
-    logger.info(f"Starting extraction from {source}")
+    logger.info(f"Starting extraction from {source}...")
 
     try:
         feed = feedparser.parse(url)

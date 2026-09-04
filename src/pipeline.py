@@ -2,7 +2,7 @@ from src.config import RSS_SOURCES
 from src.extract import extract_rss
 from src.transform import transform_articles
 from src.validate import validate_articles
-from src.load import create_connection, load_articles
+from src.load import try_create_connection, load_articles
 
 
 def run_pipeline() -> dict[str, int]:
@@ -24,7 +24,7 @@ def run_pipeline() -> dict[str, int]:
     valid_articles = validate_articles(transformed_articles)
     valid_count = len(valid_articles)
 
-    connection = create_connection()
+    connection = try_create_connection()
 
     try:
         loaded_count = load_articles(connection, valid_articles, commit=True)
