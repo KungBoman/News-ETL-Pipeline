@@ -28,7 +28,10 @@ def try_create_connection(
     for attempt in range(1, max_attempts + 1):
         logger.info(
             f"Connecting to PostgreSQL... "
-            f"(attempt {attempt}/{max_attempts})"
+            f"{
+                f"(attempt {attempt}/{max_attempts})"
+                if attempt > 1 else ""
+            }"
         )
 
         try:
