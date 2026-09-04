@@ -1,53 +1,53 @@
 # Swedish News ETL Pipeline
 
-A Python ETL pipeline that collects Swedish news articles from RSS feeds, validates and deduplicates the data, stores it in a database, and runs automated tests with GitHub Actions.
+A Python ETL pipeline that collects Swedish news articles from multiple RSS feeds, processes and validates the data, stores it in PostgreSQL, and exposes it through a FastAPI REST API.
 
 ## Architecture
 
-- RSS Feeds
-- Extract
-- Transform
-- Validate
-- Deduplicate
-- PostgreSQL
-- REST API
-- Clients
+```mermaid
+flowchart TD
+    A[RSS Feeds] --> B[Extract]
+    B --> C[Transform]
+    C --> D[Deduplicate]
+    D --> E[Validate]
+    E --> F[PostgreSQL]
+    F --> G[REST API]
+    G --> H[Clients]
+```
 
 ## Features
 
-- Extracts news from multiple Swedish RSS sources
-- Cleans and standardizes article data
-- Enriches articles with a politics-related flag
-- Deduplicates articles based on URL
+- Extracts articles from multiple Swedish RSS sources
+- Cleans, standardizes and enriches article data
+- Detects politics-related articles
+- Deduplicates articles by URL
 - Validates required fields
-- Loads data into PostgreSQL
-- Error handling, logging and transaction rollback
-- REST API built with FastAPI
-- Interactive Swagger API documentation
-- Automated tests with pytest
-- GitHub Actions CI
-- Scheduled pipeline execution
-- Versioned GitHub Releases
+- Stores data in PostgreSQL
+- REST API with FastAPI and Swagger
+- Automated testing with pytest
+- Ruff linting and mypy type checking
+- Test coverage with pytest-cov
+- Dockerized application
+- GitHub Actions CI/CD
+- Scheduled ETL pipeline
+- Versioned releases and Docker images
 
 ## Tech Stack
 
 - Python
 - PostgreSQL
-- Docker
 - FastAPI
 - Uvicorn
+- Docker
 - pytest
+- Ruff
+- mypy
 - GitHub Actions
+- GitHub Container Registry
 
-## Setup
+## Quick Start
 
-### 1. Start PostgreSQL
-
-```bash
-docker compose up -d
-```
-
-### 2. Configure environment variables
+### 1. Configure environment variables
 
 Create a `.env` file:
 
@@ -59,41 +59,55 @@ DB_USER=news_user
 DB_PASSWORD=news_password
 ```
 
+### 2. Start the services
+
+```bash
+docker compose up -d
+```
+
 ### 3. Create the database schema
 
 ```bash
 docker exec -i news-etl-postgres psql -U news_user -d news < sql/schema.sql
 ```
 
-### 4. Install dependencies
+### 4. Install Python dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Run the pipeline
+### 5. Run the ETL pipeline
 
 ```bash
 python main.py
 ```
 
-### 6. Run tests
+### 6. Run the tests
 
 ```bash
 pytest
 ```
 
+### 7. Run quality checks
+
+```bash
+ruff check .
+mypy tests
+mypy src
+```
+
 ## API
 
-The REST API is built with FastAPI and provides interactive Swagger documentation.
+The API runs on port `8000` when started through Docker Compose.
 
-When the API container is running, Swagger is available at:
+Swagger documentation:
 
 ```text
 http://localhost:8000/docs
 ```
 
-Available endpoints include:
+Available endpoints:
 
 - `GET /articles/`
 - `GET /articles/{id}`
@@ -101,40 +115,20 @@ Available endpoints include:
 
 ## CI/CD
 
-GitHub Actions automatically runs the test suite on pushes and pull requests.
+GitHub Actions provides:
 
-The pipeline can also be triggered on a schedule and runs against a temporary PostgreSQL service.
+- Automated linting
+- Static type checking
+- Test execution and coverage
+- Docker image builds
+- Scheduled ETL pipeline runs
+- Versioned releases
 
-Version tags trigger a release workflow that:
+## Documentation
 
-1. Runs the tests
-2. Builds a project artifact
-3. Creates a GitHub Release
+More detailed documentation is available in the `docs/` directory:
 
-Example:
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-### Docker
-
-Check that Docker is installed:
-
-```bash
-docker --version
-docker compose version
-```
-
-Start the PostgreSQL and API containers:
-
-```bash
-docker compose up -d
-```
-
-Connect to the database:
-
-```bash
-docker exec -it news-etl-postgres psql -U news_user -d news
-```
+- [Architecture](docs/architecture.md)
+- [Testing](docs/testing.md)
+- [Deployment](docs/deployment.md)
+- [CI/CD](docs/ci-cd.md)
