@@ -4,11 +4,14 @@ Endpoints for browsing and fetching articles.
 
 from datetime import datetime
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from src.load import try_create_connection
-from src.repository.articles import get_articles
+from src.repository.articles import (
+    get_article_by_id,
+    get_articles,
+)
 
 
 class ArticleResponse(BaseModel):
@@ -26,7 +29,7 @@ class ArticleResponse(BaseModel):
 router = APIRouter(prefix="/articles", tags=["articles"])
 
 
-@router.get("/get")
+@router.get("/")
 def get_articles_endpoint() -> list[ArticleResponse]:
     connection = try_create_connection()
 
@@ -47,6 +50,35 @@ def get_articles_endpoint() -> list[ArticleResponse]:
             )
             for row in rows
         ]
+
+    finally:
+        connection.close()
+
+
+@router.get("/{article_id}")
+def get_article_by_id_endpoint(article_id: int) -> ArticleResponse:
+    connection = try_create_connection()
+
+    try:
+        row = get_article_by_id(connection, article_id)
+
+        if row is None:
+            raise HTTPException(
+                status_code=404,
+                detail="Article not found",
+            )
+
+        return ArticleResponse(
+            id=row[0],
+            source=row[1],
+            title=row[2],
+            description=row[3],
+            url=row[4],
+            published_at=row[5],
+            author=row[6],
+            category=row[7],
+            is_politics_related=row[8],
+        )
 
     finally:
         connection.close()

@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
 
 from src.api import app
+from tests.test_helpers import make_article_row
 
 client = TestClient(app)
 
@@ -21,22 +22,12 @@ def test_get_articles(mock_connection):
     cursor = connection.cursor.return_value.__enter__.return_value
 
     cursor.fetchall.return_value = [
-        (
-            1,
-            "SVT",
-            "Test article",
-            "Test description",
-            "https://example.com/article",
-            datetime(2026, 9, 4, 10, 0, tzinfo=timezone.utc),
-            None,
-            "Nyheter",
-            True,
-        )
+        make_article_row()
     ]
 
     mock_connection.return_value = connection
 
-    response = client.get("/articles/get")
+    response = client.get("/articles/")
 
     assert response.status_code == 200
 
@@ -46,3 +37,38 @@ def test_get_articles(mock_connection):
     assert articles[0]["id"] == 1
     assert articles[0]["source"] == "SVT"
     assert articles[0]["title"] == "Test article"
+
+
+@patch("src.routers.articles.try_create_connection")
+@patch("src.routers.articles.get_article_by_id")
+def test_get_article(mock_get_article, mock_connection):
+    connection = MagicMock()
+    mock_connection.return_value = connection
+
+    mock_get_article.return_value = make_article_row()
+
+    response = client.get("/articles/1")
+
+    assert response.status_code == 200
+
+    article = response.json()
+
+    assert article["id"] == 1
+    assert article["source"] == "SVT"
+    assert article["title"] == "Test article"
+
+
+@patch("src.routers.articles.try_create_connection")
+@patch("src.routers.articles.get_article_by_id")
+def test_get_article_not_found(mock_get_article, mock_connection):
+    connection = MagicMock()
+    mock_connection.return_value = connection
+
+    mock_get_article.return_value = None
+
+    response = client.get("/articles/999")
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Article not found"
+    }
