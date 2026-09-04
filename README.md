@@ -2,12 +2,14 @@
 A Python ETL pipeline that collects Swedish news articles from RSS feeds, validates and deduplicates the data, stores it in a database, and runs automated tests with GitHub Actions.
 
 ## Architecture
-RSS Feeds  
+- RSS Feeds  
 - Extract  
 - Transform  
 - Validate  
 - Deduplicate  
 - PostgreSQL  
+- REST API
+- Clients
 
 ## Features
 - Extracts news from multiple Swedish RSS sources
