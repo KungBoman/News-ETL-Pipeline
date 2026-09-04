@@ -4,7 +4,7 @@ import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
-from src.api import app
+from src.api import app, ensure_database_connection
 from tests.helpers import make_article_row
 
 client = TestClient(app)
@@ -180,3 +180,43 @@ def test_health_closes_connection_on_error(mock_connection):
         client.get("/health")
 
     connection.close.assert_called_once()
+
+
+@patch("src.api.create_connection")
+def test_ensure_database_connection(mock_create_connection):
+    connection = MagicMock()
+    mock_create_connection.return_value = connection
+
+    result = ensure_database_connection()
+
+    assert result is True
+    connection.cursor.return_value.__enter__.return_value.execute.assert_called_once_with(
+        "SELECT 1"
+    )
+    connection.close.assert_called_once()
+
+
+@patch(
+    "src.api.create_connection",
+    side_effect=psycopg.OperationalError("Database unavailable"),
+)
+def test_ensure_database_connection_returns_false_on_error(
+    mock_create_connection,
+):
+    result = ensure_database_connection()
+
+    assert result is False
+
+
+@patch("src.api.ensure_database_connection", return_value=False)
+def test_lifespan_raises_when_database_connection_fails(
+    mock_ensure_database_connection,
+):
+    with (
+        pytest.raises(
+            RuntimeError,
+            match="Database connection failed",
+        ),
+        TestClient(app),
+    ):
+        pass

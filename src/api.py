@@ -1,20 +1,37 @@
 from contextlib import asynccontextmanager
 
+import psycopg
 from fastapi import FastAPI
 
-from src.routers import (
-    articles,
-    health,
-)
+from src.load import create_connection
+from src.logger import get_logger
+from src.routers import articles, health
+
+logger = get_logger(__name__)
 
 
 def ensure_database_connection() -> bool:
-    return False
+    try:
+        connection = create_connection()
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+
+        connection.close()
+
+        logger.info("Database connection verified")
+        return True
+
+    except psycopg.Error:
+        logger.exception("Could not verify database connection")
+        return False
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    ensure_database_connection()
+    if not ensure_database_connection():
+        raise RuntimeError("Database connection failed")
+
     yield
 
 
