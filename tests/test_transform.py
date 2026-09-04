@@ -55,7 +55,12 @@ def test_clean_article_handles_missing_optional_fields():
 def test_standardize_article():
     article = make_test_article(
         published_at=datetime(
-            2026, 9, 2, 16, 29, 5,
+            2026,
+            9,
+            2,
+            16,
+            29,
+            5,
             tzinfo=timezone.utc,
         )
     )
@@ -68,7 +73,7 @@ def test_standardize_article():
 def test_enrich_article():
     article = {
         "title": "Regeringen presenterar nytt förslag",
-        "description": "Statsministern kommenterar förslaget."
+        "description": "Statsministern kommenterar förslaget.",
     }
 
     result = enrich_article(article)
@@ -79,7 +84,7 @@ def test_enrich_article():
 def test_enrich_article_not_politics_related():
     article = {
         "title": "Ny AI-modell lanserad",
-        "description": "Företaget presenterar sin nya modell."
+        "description": "Företaget presenterar sin nya modell.",
     }
 
     result = enrich_article(article)

@@ -18,9 +18,7 @@ def test_get_articles_integration(db_connection):
 
 
 def test_get_articles_with_pagination_integration(db_connection):
-    response = client.get(
-        "/articles/?limit=2&offset=0"
-    )
+    response = client.get("/articles/?limit=2&offset=0")
 
     assert response.status_code == 200
 
@@ -30,9 +28,7 @@ def test_get_articles_with_pagination_integration(db_connection):
 
 
 def test_get_articles_with_offset_integration(db_connection):
-    response = client.get(
-        "/articles/?limit=2&offset=2"
-    )
+    response = client.get("/articles/?limit=2&offset=2")
 
     assert response.status_code == 200
 
@@ -42,9 +38,7 @@ def test_get_articles_with_offset_integration(db_connection):
 
 
 def test_get_articles_with_source_filter_integration(db_connection):
-    response = client.get(
-        "/articles/?source=SVT"
-    )
+    response = client.get("/articles/?source=SVT")
 
     assert response.status_code == 200
 
@@ -55,16 +49,11 @@ def test_get_articles_with_source_filter_integration(db_connection):
 
 
 def test_get_articles_with_politics_filter_integration(db_connection):
-    response = client.get(
-        "/articles/?is_politics_related=true"
-    )
+    response = client.get("/articles/?is_politics_related=true")
 
     assert response.status_code == 200
 
     articles = response.json()
 
     assert len(articles) == 2
-    assert all(
-        article["is_politics_related"] is True
-        for article in articles
-    )
+    assert all(article["is_politics_related"] is True for article in articles)

@@ -28,10 +28,7 @@ def try_create_connection(
     for attempt in range(1, max_attempts + 1):
         logger.info(
             f"Connecting to PostgreSQL... "
-            f"{
-                f"(attempt {attempt}/{max_attempts})"
-                if attempt > 1 else ""
-            }"
+            f"{f'(attempt {attempt}/{max_attempts})' if attempt > 1 else ''}"
         )
 
         try:
@@ -49,8 +46,7 @@ def try_create_connection(
                 raise
 
             logger.warning(
-                f"Could not connect to PostgreSQL. "
-                f"Retrying in {retry_delay} seconds..."
+                f"Could not connect to PostgreSQL. Retrying in {retry_delay} seconds..."
             )
 
             time.sleep(retry_delay)
@@ -58,7 +54,9 @@ def try_create_connection(
     raise RuntimeError("Could not create database connection")
 
 
-def load_article(connection: psycopg.Connection, article: Article, commit: bool) -> bool:
+def load_article(
+    connection: psycopg.Connection, article: Article, commit: bool
+) -> bool:
     query = """
         INSERT INTO articles (
             source,
@@ -100,7 +98,9 @@ def load_article(connection: psycopg.Connection, article: Article, commit: bool)
     return result is not None
 
 
-def load_articles(connection: psycopg.Connection, articles: list[Article], commit: bool) -> int:
+def load_articles(
+    connection: psycopg.Connection, articles: list[Article], commit: bool
+) -> int:
     inserted = 0
     duplicates = 0
 
@@ -116,10 +116,7 @@ def load_articles(connection: psycopg.Connection, articles: list[Article], commi
         if commit:
             connection.commit()
 
-        logger.info(
-            f"Loaded {inserted} articles, "
-            f"skipped {duplicates} duplicates"
-        )
+        logger.info(f"Loaded {inserted} articles, skipped {duplicates} duplicates")
 
         return inserted
 

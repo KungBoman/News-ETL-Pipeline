@@ -35,5 +35,5 @@ def root():
         "endpoints": {
             "articles": "/articles",
             "health": "/health",
-        }
+        },
     }

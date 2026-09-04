@@ -9,10 +9,7 @@ def run_pipeline() -> dict[str, int]:
     articles = []
 
     for source in RSS_SOURCES:
-        source_articles = extract_rss(
-            source["url"],
-            source["name"]
-        )
+        source_articles = extract_rss(source["url"], source["name"])
 
         articles.extend(source_articles)
 

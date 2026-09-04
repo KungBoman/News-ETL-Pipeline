@@ -53,9 +53,7 @@ def _create_table(cursor):
 
 
 def _truncate_table(cursor):
-    cursor.execute(
-        "TRUNCATE TABLE articles RESTART IDENTITY"
-    )
+    cursor.execute("TRUNCATE TABLE articles RESTART IDENTITY")
 
 
 def _insert_table(cursor):

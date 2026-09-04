@@ -26,7 +26,6 @@ def validate_articles(articles: list[Article]) -> list[Article]:
         if validate_article(article):
             valid_articles.append(article)
 
-    logger.info(
-        f"Validated {len(valid_articles)}/{len(articles)} articles")
+    logger.info(f"Validated {len(valid_articles)}/{len(articles)} articles")
 
     return valid_articles

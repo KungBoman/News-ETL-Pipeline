@@ -21,9 +21,7 @@ def test_get_articles(mock_connection):
     connection = MagicMock()
     cursor = connection.cursor.return_value.__enter__.return_value
 
-    cursor.fetchall.return_value = [
-        make_article_row()
-    ]
+    cursor.fetchall.return_value = [make_article_row()]
 
     mock_connection.return_value = connection
 
@@ -47,9 +45,7 @@ def test_get_articles_with_pagination(mock_get_articles, mock_connection):
 
     mock_get_articles.return_value = []
 
-    response = client.get(
-        "/articles/?limit=10&offset=20"
-    )
+    response = client.get("/articles/?limit=10&offset=20")
 
     assert response.status_code == 200
 
@@ -70,9 +66,7 @@ def test_get_articles_with_filter(mock_get_articles, mock_connection):
 
     mock_get_articles.return_value = []
 
-    response = client.get(
-        "/articles/?source=SVT&is_politics_related=true"
-    )
+    response = client.get("/articles/?source=SVT&is_politics_related=true")
 
     assert response.status_code == 200
 
@@ -115,9 +109,7 @@ def test_get_article_not_found(mock_get_article, mock_connection):
     response = client.get("/articles/999")
 
     assert response.status_code == 404
-    assert response.json() == {
-        "detail": "Article not found"
-    }
+    assert response.json() == {"detail": "Article not found"}
 
 
 @patch("src.routers.health.try_create_connection")

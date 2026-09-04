@@ -11,16 +11,18 @@ class MockFeed:
 
 
 def test_extract_rss():
-    mock_feed = MockFeed([
-        {
-            "title": "Test article",
-            "description": "Test description",
-            "link": "https://example.com",
-            "published_parsed": (2026, 9, 2, 16, 29, 5),
-            "author": "Test Author",
-            "category": "News",
-        }
-    ])
+    mock_feed = MockFeed(
+        [
+            {
+                "title": "Test article",
+                "description": "Test description",
+                "link": "https://example.com",
+                "published_parsed": (2026, 9, 2, 16, 29, 5),
+                "author": "Test Author",
+                "category": "News",
+            }
+        ]
+    )
 
     with patch("src.extract.feedparser.parse", return_value=mock_feed):
         result = extract_rss("https://example.com/rss", "Test Source")
@@ -40,7 +42,4 @@ def test_all_rss_sources():
         )
 
         assert len(articles) > 0
-        assert all(
-            article["source"] == source["name"]
-            for article in articles
-        )
+        assert all(article["source"] == source["name"] for article in articles)

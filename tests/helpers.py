@@ -17,7 +17,7 @@ def make_test_article(
         "published_at": published_at,
         "author": None,
         "category": None,
-        "is_politics_related": False
+        "is_politics_related": False,
     }
 
 

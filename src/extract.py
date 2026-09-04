@@ -32,24 +32,23 @@ def extract_rss(url: str, source: str) -> list[Article]:
         articles: list[Article] = []
 
         for entry in feed.entries:
-
             publisheld_at = parse_published_at(entry)
 
             if publisheld_at is None:
-                logger.warning(
-                    f"Skipping article from {source}: missing published_at"
-                )
+                logger.warning(f"Skipping article from {source}: missing published_at")
                 continue
 
-            articles.append({
-                "source": source,
-                "title": entry.get("title"),
-                "description": entry.get("description"),
-                "url": entry.get("link"),
-                "published_at": publisheld_at,
-                "author": entry.get("author"),
-                "category": entry.get("category"),
-            })
+            articles.append(
+                {
+                    "source": source,
+                    "title": entry.get("title"),
+                    "description": entry.get("description"),
+                    "url": entry.get("link"),
+                    "published_at": publisheld_at,
+                    "author": entry.get("author"),
+                    "category": entry.get("category"),
+                }
+            )
 
         logger.info(f"Extracted {len(articles)} articles from {source}")
 

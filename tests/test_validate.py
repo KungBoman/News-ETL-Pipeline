@@ -30,19 +30,17 @@ def test_article_without_published_at_is_invalid():
 
 
 def test_validate_articles_returns_valid_articles():
-    valid_article = make_test_article(
-        url="https://example.com/valid"
-    )
+    valid_article = make_test_article(url="https://example.com/valid")
 
-    invalid_article = make_test_article(
-        url="https://example.com/invalid"
-    )
+    invalid_article = make_test_article(url="https://example.com/invalid")
     invalid_article["title"] = None
 
-    result = validate_articles([
-        valid_article,
-        invalid_article,
-    ])
+    result = validate_articles(
+        [
+            valid_article,
+            invalid_article,
+        ]
+    )
 
     assert result == [valid_article]
 

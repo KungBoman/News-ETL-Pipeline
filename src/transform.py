@@ -1,5 +1,3 @@
-
-
 from src.models import Article
 
 
@@ -56,8 +54,7 @@ def enrich_article(article: Article) -> Article:
     ]
 
     enriched_article["is_politics_related"] = any(
-        keyword in text
-        for keyword in politics_keywords
+        keyword in text for keyword in politics_keywords
     )
 
     return enriched_article
