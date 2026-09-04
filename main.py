@@ -10,13 +10,13 @@ def main() -> None:
     try:
         stats = run_pipeline()
 
-        print(f"Extracted: {stats['extracted']} articles")
-        print(f"Transformed: {stats['transformed']} articles")
-        print(f"Valid: {stats['valid']} articles")
-        print(f"Loaded: {stats['loaded']} articles")
+        logger.info(f"Extracted: {stats['extracted']} articles")
+        logger.info(f"Transformed: {stats['transformed']} articles")
+        logger.info(f"Valid: {stats['valid']} articles")
+        logger.info(f"Loaded: {stats['loaded']} articles")
 
     except psycopg.OperationalError as error:
-        print(f"Database connection failed: {error}")
+        logger.error(f"Database connection failed: {error}")
         raise SystemExit(1)
 
     except KeyboardInterrupt:

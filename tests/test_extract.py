@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import pytest
+
 from src.config import RSS_SOURCES
 from src.extract import extract_rss
 
@@ -32,6 +34,29 @@ def test_extract_rss():
     assert result[0]["title"] == "Test article"
     assert result[0]["description"] == "Test description"
     assert result[0]["url"] == "https://example.com"
+
+
+def test_extract_rss_without_published_at():
+    with (
+        patch("src.extract.feedparser.parse") as mock_parse,
+        patch("src.extract.parse_published_at", return_value=None),
+    ):
+        mock_parse.return_value.entries = [{"title": "Test article"}]
+
+        result = extract_rss("https://example.com/rss", "Test Source")
+
+    assert result == []
+
+
+def test_extract_rss_invalid_source():
+    with (
+        patch(
+            "src.extract.feedparser.parse",
+            side_effect=Exception("RSS error"),
+        ),
+        pytest.raises(Exception, match="RSS error"),
+    ):
+        extract_rss("https://example.com/rss", "Test Source")
 
 
 def test_all_rss_sources():
