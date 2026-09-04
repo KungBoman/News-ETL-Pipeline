@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
 
 from src.api import app
-from tests.test_helpers import make_article_row
+from tests.helpers import make_article_row
 
 client = TestClient(app)
 

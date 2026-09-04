@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-import feedparser
+import feedparser  # type: ignore[import-untyped]
 
 from src.logger import get_logger
 from src.models import Article
@@ -13,13 +13,11 @@ logger = get_logger(__name__)
 def parse_published_at(entry) -> datetime | None:
     published_at = entry.get("published_parsed")
 
-    if not published_at:
-        return None
+    if published_at:
+        parsed_datetime = datetime(*published_at[:6])
+        return parsed_datetime.replace(tzinfo=timezone.utc)
 
-    return datetime(
-        *published_at[:6],
-        tzinfo=timezone.utc,
-    )
+    return None
 
 
 def extract_rss(url: str, source: str) -> list[Article]:
@@ -35,12 +33,20 @@ def extract_rss(url: str, source: str) -> list[Article]:
 
         for entry in feed.entries:
 
+            publisheld_at = parse_published_at(entry)
+
+            if publisheld_at is None:
+                logger.warning(
+                    f"Skipping article from {source}: missing published_at"
+                )
+                continue
+
             articles.append({
                 "source": source,
                 "title": entry.get("title"),
                 "description": entry.get("description"),
                 "url": entry.get("link"),
-                "published_at": parse_published_at(entry),
+                "published_at": publisheld_at,
                 "author": entry.get("author"),
                 "category": entry.get("category"),
             })

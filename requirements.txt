@@ -1,6 +1,7 @@
 feedparser
 pytest
 ruff
+mypy
 psycopg[binary,pool]
 python-dotenv
 pydantic

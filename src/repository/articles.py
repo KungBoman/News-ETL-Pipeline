@@ -22,15 +22,20 @@ def get_articles(
         FROM articles
     """
 
-    params = []
+    params: list[str | bool | int] = []
+
+    conditions = []
 
     if source:
-        query += " WHERE source = %s"
+        conditions.append("source = %s")
         params.append(source)
 
-    if is_politics_related:
-        query += " WHERE is_politics_related = %s"
+    if is_politics_related is not None:
+        conditions.append("is_politics_related = %s")
         params.append(is_politics_related)
+
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
 
     query += """
         ORDER BY published_at DESC
@@ -48,7 +53,7 @@ def get_articles(
 def get_article_by_id(
     connection: psycopg.Connection,
     article_id: int,
-) -> list[tuple]:
+) -> tuple | None:
     query = """
         SELECT
             id,

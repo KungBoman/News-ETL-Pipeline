@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.load import load_article, load_articles
-from tests.test_helpers import make_test_article
+from tests.helpers import make_test_article
 
 
 def test_load_article():

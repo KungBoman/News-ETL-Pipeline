@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-import feedparser
+import feedparser  # type: ignore[import-untyped]
 
 from src.models import Article
 
@@ -8,13 +8,23 @@ from src.models import Article
 def clean_article(article: Article) -> Article:
     cleaned_article = article.copy()
 
-    for field in ["title", "description", "url", "author", "category"]:
-        value = cleaned_article.get(field)
+    cleaned_article["title"] = cleaned_article["title"].strip()
+    cleaned_article["url"] = cleaned_article["url"].strip()
 
-        if isinstance(value, str):
-            value = value.strip()
+    description = cleaned_article.get("description")
+    if isinstance(description, str):
+        description = description.strip()
+    cleaned_article["description"] = description or None
 
-        cleaned_article[field] = value if value else None
+    author = cleaned_article.get("author")
+    if isinstance(author, str):
+        author = author.strip()
+    cleaned_article["author"] = author or None
+
+    category = cleaned_article.get("category")
+    if isinstance(category, str):
+        category = category.strip()
+    cleaned_article["category"] = category or None
 
     return cleaned_article
 

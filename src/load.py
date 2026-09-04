@@ -55,6 +55,8 @@ def try_create_connection(
 
             time.sleep(retry_delay)
 
+    raise RuntimeError("Could not create database connection")
+
 
 def load_article(connection: psycopg.Connection, article: Article, commit: bool) -> bool:
     query = """
@@ -98,7 +100,7 @@ def load_article(connection: psycopg.Connection, article: Article, commit: bool)
     return result is not None
 
 
-def load_articles(connection: psycopg.Connection, articles: list[Article], commit: bool) -> None:
+def load_articles(connection: psycopg.Connection, articles: list[Article], commit: bool) -> int:
     inserted = 0
     duplicates = 0
 

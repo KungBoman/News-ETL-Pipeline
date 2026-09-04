@@ -9,7 +9,7 @@ from src.routers import (
 
 
 def ensure_database_connection() -> bool:
-    pass
+    return False
 
 
 @asynccontextmanager

@@ -44,6 +44,9 @@ jobs:
       - name: Linting
         run: ruff check .
 
+      - name: Run type checks
+        run: mypy src
+
       - name: Run tests
         env:
           DB_HOST: localhost

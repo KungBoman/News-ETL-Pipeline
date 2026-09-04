@@ -16,7 +16,7 @@ def test_extract_rss():
             "title": "Test article",
             "description": "Test description",
             "link": "https://example.com",
-            "published": "Wed, 02 Sep 2026 16:29:05 +0200",
+            "published_parsed": (2026, 9, 2, 16, 29, 5),
             "author": "Test Author",
             "category": "News",
         }

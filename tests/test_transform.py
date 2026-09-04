@@ -6,7 +6,7 @@ from src.transform import (
     enrich_article,
     standardize_article,
 )
-from tests.test_helpers import make_test_article
+from tests.helpers import make_test_article
 
 
 def test_clean_article():
