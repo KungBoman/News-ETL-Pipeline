@@ -47,3 +47,6 @@ jobs:
           DB_USER: news_user
           DB_PASSWORD: news_password
         run: pytest
+
+      - name: Build Docker image
+        run: docker build -t news-etl-api .
