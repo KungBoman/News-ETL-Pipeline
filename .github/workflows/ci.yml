@@ -56,7 +56,18 @@ jobs:
           DB_NAME: news_test
           DB_USER: news_user
           DB_PASSWORD: news_password
-        run: pytest --cov=src --cov-report=term-missing --cov-config=.coveragerc
+        run: |
+          pytest                    \
+          --cov=src                 \
+          --cov-report=term-missing \
+          --cov-config=.coveragerc  \
+          --cov-fail-under=70
+
+          COVERAGE=$(coverage report | tail -1 | awk '{print $NF}' | tr -d '%')
+
+          if [ "$COVERAGE" -lt 80 ]; then
+            echo "::warning::Test coverage is below 80% ($COVERAGE%)"
+          fi
 
       - name: Build Docker image
         run: docker build -t news-etl-api .

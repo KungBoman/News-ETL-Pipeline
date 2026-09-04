@@ -40,9 +40,9 @@ jobs:
             - name: Create databse schema
               run: |
                   PGPASSWORD=news_password psql \
-                  -h localhost \
-                  -U news_user \
-                  -d news \
+                  -h localhost                  \
+                  -U news_user                  \
+                  -d news                       \
                   -f sql/schema.sql
 
             - name: Run pipeline

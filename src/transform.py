@@ -30,24 +30,7 @@ def clean_article(article: Article) -> Article:
 
 
 def standardize_article(article: Article) -> Article:
-    standardized_article = article.copy()
-
-    published_at = standardized_article["published_at"]
-
-    if isinstance(published_at, str):
-        parsed_time = feedparser._parse_date(published_at)
-
-        if parsed_time:
-            standardized_article["published_at"] = datetime(
-                *parsed_time[:6],
-                tzinfo=timezone.utc,
-            )
-        else:
-            raise ValueError(
-                f"Could not parse published_at: {published_at}"
-            )
-
-    return standardized_article
+    return article
 
 
 def enrich_article(article: Article) -> Article:

@@ -1,3 +1,5 @@
+import pytest
+
 from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
@@ -117,3 +119,36 @@ def test_get_article_not_found(mock_get_article, mock_connection):
     assert response.json() == {
         "detail": "Article not found"
     }
+
+
+@patch("src.routers.health.try_create_connection")
+def test_health(mock_connection):
+    connection = MagicMock()
+    cursor = connection.cursor.return_value.__enter__.return_value
+
+    mock_connection.return_value = connection
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "ok",
+        "database": "ok",
+    }
+
+    cursor.execute.assert_called_once_with("SELECT 1")
+    connection.close.assert_called_once()
+
+
+@patch("src.routers.health.try_create_connection")
+def test_health_closes_connection_on_error(mock_connection):
+    connection = MagicMock()
+    cursor = connection.cursor.return_value.__enter__.return_value
+
+    cursor.execute.side_effect = Exception("Database error")
+    mock_connection.return_value = connection
+
+    with pytest.raises(Exception, match="Database error"):
+        client.get("/health")
+
+    connection.close.assert_called_once()
