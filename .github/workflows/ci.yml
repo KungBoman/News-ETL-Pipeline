@@ -44,10 +44,12 @@ jobs:
       - name: Linting
         run: ruff check .
 
-      - name: Run type checks
-        run: mypy src
+      - name: Type checks
+        run: |
+          mypy tests
+          mypy src
 
-      - name: Run tests
+      - name: Test suite
         env:
           DB_HOST: localhost
           DB_PORT: 5433

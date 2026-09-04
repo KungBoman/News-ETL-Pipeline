@@ -14,8 +14,8 @@ def parse_published_at(entry) -> datetime | None:
     published_at = entry.get("published_parsed")
 
     if published_at:
-        parsed_datetime = datetime(*published_at[:6])
-        return parsed_datetime.replace(tzinfo=timezone.utc)
+        y, mo, d, h, mi, s = published_at[:6]
+        return datetime(y, mo, d, h, mi, s, tzinfo=timezone.utc)
 
     return None
 
