@@ -11,6 +11,20 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
 
+  api:
+    build: .
+    container_name: news-etl-api
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: news
+      DB_USER: news_user
+      DB_PASSWORD: news_password
+    depends_on:
+      - postgres
+
   postgres-test:
     image: postgres:18
     container_name: news-etl-postgres-test
