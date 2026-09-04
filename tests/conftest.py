@@ -19,10 +19,8 @@ def db_connection(monkeypatch):
     )
 
     with connection.cursor() as cursor:
-        cursor.execute(
-            "TRUNCATE TABLE articles RESTART IDENTITY"
-        )
         _create_table(cursor)
+        _truncate_table(cursor)
         _insert_table(cursor)
 
     connection.commit()
@@ -30,7 +28,7 @@ def db_connection(monkeypatch):
     yield connection
 
     with connection.cursor() as cursor:
-        cursor.execute("TRUNCATE TABLE articles RESTART IDENTITY")
+        _truncate_table(cursor)
 
     connection.commit()
     connection.close()
@@ -51,6 +49,12 @@ def _create_table(cursor):
             is_politics_related BOOLEAN NOT NULL
         );
         """
+    )
+
+
+def _truncate_table(cursor):
+    cursor.execute(
+        "TRUNCATE TABLE articles RESTART IDENTITY"
     )
 
 
