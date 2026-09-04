@@ -30,6 +30,16 @@ def test_load_article_without_commit():
     connection.commit.assert_not_called()
 
 
+def test_load_article_raises_on_commit_error():
+    connection = MagicMock()
+    connection.commit.side_effect = Exception("Commit failed")
+
+    article = make_test_article()
+
+    with pytest.raises(Exception, match="Commit failed"):
+        load_article(connection, article, commit=True)
+
+
 def test_load_articles():
     connection = MagicMock()
 
