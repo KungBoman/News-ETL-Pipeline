@@ -5,3 +5,4 @@ python-dotenv
 pydantic
 fastapi
 uvicorn
+httpx2
