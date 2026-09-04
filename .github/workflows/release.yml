@@ -64,7 +64,7 @@ jobs:
 
           docker build                              \
             -t "$IMAGE_NAME:${{ github.ref_name }}" \
-            -t "$IMAGE_NAME:latest":latest          \
+            -t "$IMAGE_NAME:latest"                 \
             .
 
       - name: Push Docker image
