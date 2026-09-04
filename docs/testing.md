@@ -17,7 +17,8 @@ tests/
 ├── test_load.py
 │
 ├── test_api.py
-├── test_repository.py
+├── test_repository_articles.py
+├── test_repository_pipeline_runs.py
 └── test_api_integration.py
 ```
 
