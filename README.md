@@ -1,17 +1,20 @@
 # Swedish News ETL Pipeline
+
 A Python ETL pipeline that collects Swedish news articles from RSS feeds, validates and deduplicates the data, stores it in a database, and runs automated tests with GitHub Actions.
 
 ## Architecture
-- RSS Feeds  
-- Extract  
-- Transform  
-- Validate  
-- Deduplicate  
-- PostgreSQL  
+
+- RSS Feeds
+- Extract
+- Transform
+- Validate
+- Deduplicate
+- PostgreSQL
 - REST API
 - Clients
 
 ## Features
+
 - Extracts news from multiple Swedish RSS sources
 - Cleans and standardizes article data
 - Enriches articles with a politics-related flag
@@ -19,6 +22,8 @@ A Python ETL pipeline that collects Swedish news articles from RSS feeds, valida
 - Validates required fields
 - Loads data into PostgreSQL
 - Error handling, logging and transaction rollback
+- REST API built with FastAPI
+- Interactive Swagger API documentation
 - Automated tests with pytest
 - GitHub Actions CI
 - Scheduled pipeline execution
@@ -29,6 +34,8 @@ A Python ETL pipeline that collects Swedish news articles from RSS feeds, valida
 - Python
 - PostgreSQL
 - Docker
+- FastAPI
+- Uvicorn
 - pytest
 - GitHub Actions
 
@@ -41,7 +48,9 @@ docker compose up -d
 ```
 
 ### 2. Configure environment variables
+
 Create a `.env` file:
+
 ```bash
 DB_HOST=localhost
 DB_PORT=5432
@@ -51,26 +60,47 @@ DB_PASSWORD=news_password
 ```
 
 ### 3. Create the database schema
+
 ```bash
 docker exec -i news-etl-postgres psql -U news_user -d news < sql/schema.sql
 ```
 
 ### 4. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 5. Run the pipeline
+
 ```bash
 python main.py
 ```
 
 ### 6. Run tests
+
 ```bash
 pytest
 ```
 
-### CI/CD
+## API
+
+The REST API is built with FastAPI and provides interactive Swagger documentation.
+
+When the API container is running, Swagger is available at:
+
+```text
+http://localhost:8000/docs
+```
+
+Available endpoints include:
+
+- `GET /articles/`
+- `GET /articles/{id}`
+- `GET /health`
+
+## CI/CD
+
 GitHub Actions automatically runs the test suite on pushes and pull requests.
 
 The pipeline can also be triggered on a schedule and runs against a temporary PostgreSQL service.
@@ -82,6 +112,7 @@ Version tags trigger a release workflow that:
 3. Creates a GitHub Release
 
 Example:
+
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
@@ -90,17 +121,20 @@ git push origin v1.0.0
 ### Docker
 
 Check that Docker is installed:
+
 ```bash
 docker --version
 docker compose version
 ```
 
-Start the PostgreSQL container:
+Start the PostgreSQL and API containers:
+
 ```bash
 docker compose up -d
 ```
 
 Connect to the database:
+
 ```bash
 docker exec -it news-etl-postgres psql -U news_user -d news
 ```
