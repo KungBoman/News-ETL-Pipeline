@@ -4,7 +4,7 @@ Endpoints for browsing and fetching articles.
 
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from src.load import try_create_connection
@@ -30,11 +30,18 @@ router = APIRouter(prefix="/articles", tags=["articles"])
 
 
 @router.get("/")
-def get_articles_endpoint() -> list[ArticleResponse]:
+def get_articles_endpoint(
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+) -> list[ArticleResponse]:
     connection = try_create_connection()
 
     try:
-        rows = get_articles(connection)
+        rows = get_articles(
+            connection,
+            limit=limit,
+            offset=offset
+        )
 
         return [
             ArticleResponse(

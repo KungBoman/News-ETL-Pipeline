@@ -3,6 +3,8 @@ import psycopg
 
 def get_articles(
     connection: psycopg.Connection,
+    limit: int,
+    offset: int,
 ) -> list[tuple]:
     query = """
         SELECT
@@ -17,10 +19,12 @@ def get_articles(
             is_politics_related
         FROM articles
         ORDER BY published_at DESC
+        LIMIT %s
+        OFFSET %s
     """
 
     with connection.cursor() as cursor:
-        cursor.execute(query)
+        cursor.execute(query, (limit, offset))
         return cursor.fetchall()
 
 

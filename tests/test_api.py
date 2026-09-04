@@ -40,6 +40,27 @@ def test_get_articles(mock_connection):
 
 
 @patch("src.routers.articles.try_create_connection")
+@patch("src.routers.articles.get_articles")
+def test_get_articles_with_pagination(mock_get_articles, mock_connection):
+    connection = MagicMock()
+    mock_connection.return_value = connection
+
+    mock_get_articles.return_value = []
+
+    response = client.get(
+        "/articles/?limit=10&offset=20"
+    )
+
+    assert response.status_code == 200
+
+    mock_get_articles.assert_called_once_with(
+        connection,
+        limit=10,
+        offset=20,
+    )
+
+
+@patch("src.routers.articles.try_create_connection")
 @patch("src.routers.articles.get_article_by_id")
 def test_get_article(mock_get_article, mock_connection):
     connection = MagicMock()
