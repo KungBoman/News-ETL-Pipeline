@@ -33,6 +33,8 @@ router = APIRouter(prefix="/articles", tags=["articles"])
 def get_articles_endpoint(
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
+    source: str | None = None,
+    is_politics_related: bool | None = None,
 ) -> list[ArticleResponse]:
     connection = try_create_connection()
 
@@ -40,7 +42,9 @@ def get_articles_endpoint(
         rows = get_articles(
             connection,
             limit=limit,
-            offset=offset
+            offset=offset,
+            source=source,
+            is_politics_related=is_politics_related,
         )
 
         return [

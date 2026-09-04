@@ -5,6 +5,8 @@ def get_articles(
     connection: psycopg.Connection,
     limit: int,
     offset: int,
+    source: str | None = None,
+    is_politics_related: bool | None = None,
 ) -> list[tuple]:
     query = """
         SELECT
@@ -18,13 +20,28 @@ def get_articles(
             category,
             is_politics_related
         FROM articles
+    """
+
+    params = []
+
+    if source:
+        query += " WHERE source = %s"
+        params.append(source)
+
+    if is_politics_related:
+        query += " WHERE is_politics_related = %s"
+        params.append(is_politics_related)
+
+    query += """
         ORDER BY published_at DESC
         LIMIT %s
         OFFSET %s
     """
 
+    params.extend([limit, offset])
+
     with connection.cursor() as cursor:
-        cursor.execute(query, (limit, offset))
+        cursor.execute(query, params)
         return cursor.fetchall()
 
 
