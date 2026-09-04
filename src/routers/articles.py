@@ -4,6 +4,7 @@ Endpoints for browsing and fetching articles.
 
 from datetime import datetime
 
+import psycopg
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
@@ -62,6 +63,12 @@ def get_articles_endpoint(
             for row in rows
         ]
 
+    except psycopg.Error:
+        raise HTTPException(
+            status_code=500,
+            detail="Database error",
+        )
+
     finally:
         connection.close()
 
@@ -89,6 +96,12 @@ def get_article_by_id_endpoint(article_id: int) -> ArticleResponse:
             author=row[6],
             category=row[7],
             is_politics_related=row[8],
+        )
+
+    except psycopg.Error:
+        raise HTTPException(
+            status_code=500,
+            detail="Database error",
         )
 
     finally:

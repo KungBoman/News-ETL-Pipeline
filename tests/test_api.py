@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock, patch
 
+import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
@@ -80,6 +81,24 @@ def test_get_articles_with_filter(mock_get_articles, mock_connection):
 
 
 @patch("src.routers.articles.try_create_connection")
+@patch("src.routers.articles.get_articles")
+def test_get_articles_returns_500_on_database_error(
+    mock_get_articles,
+    mock_connection,
+):
+    connection = MagicMock()
+    mock_connection.return_value = connection
+
+    mock_get_articles.side_effect = psycopg.Error("Database error")
+
+    response = client.get("/articles/")
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Database error"}
+    connection.close.assert_called_once()
+
+
+@patch("src.routers.articles.try_create_connection")
 @patch("src.routers.articles.get_article_by_id")
 def test_get_article(mock_get_article, mock_connection):
     connection = MagicMock()
@@ -110,6 +129,24 @@ def test_get_article_not_found(mock_get_article, mock_connection):
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Article not found"}
+
+
+@patch("src.routers.articles.try_create_connection")
+@patch("src.routers.articles.get_article_by_id")
+def test_get_article_returns_500_on_database_error(
+    mock_get_article,
+    mock_connection,
+):
+    connection = MagicMock()
+    mock_connection.return_value = connection
+
+    mock_get_article.side_effect = psycopg.Error("Database error")
+
+    response = client.get("/articles/1")
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Database error"}
+    connection.close.assert_called_once()
 
 
 @patch("src.routers.health.try_create_connection")
