@@ -1,5 +1,6 @@
 feedparser
 pytest
+pytest-cov
 ruff
 mypy
 psycopg[binary,pool]

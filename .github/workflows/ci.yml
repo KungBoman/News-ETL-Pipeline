@@ -54,7 +54,7 @@ jobs:
           DB_NAME: news_test
           DB_USER: news_user
           DB_PASSWORD: news_password
-        run: pytest
+        run: pytest --cov=src --cov-report=term-missing --cov-config=.coveragerc
 
       - name: Build Docker image
         run: docker build -t news-etl-api .
