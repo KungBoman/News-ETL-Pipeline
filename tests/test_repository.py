@@ -2,7 +2,6 @@ from src.repository.articles import (
     get_article_by_id,
     get_articles,
 )
-from src.repository.articles import get_articles
 
 
 def test_get_articles(db_connection):
