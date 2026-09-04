@@ -1,7 +1,7 @@
 import psycopg
 
-from src.pipeline import run_pipeline
 from src.logger import get_logger
+from src.pipeline import run_pipeline
 
 logger = get_logger(__name__)
 

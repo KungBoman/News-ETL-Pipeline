@@ -1,9 +1,9 @@
-import feedparser
 from datetime import datetime, timezone
+
+import feedparser
 
 from src.logger import get_logger
 from src.models import Article
-
 
 SVT_RSS_URL = "http://www.svt.se/nyheter/sverige/rss.xml"
 

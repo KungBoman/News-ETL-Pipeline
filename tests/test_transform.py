@@ -1,13 +1,12 @@
 from datetime import datetime, timezone
 
-from tests.test_helpers import make_test_article
-from src.transform import deduplicate_articles
-
 from src.transform import (
     clean_article,
-    standardize_article,
+    deduplicate_articles,
     enrich_article,
+    standardize_article,
 )
+from tests.test_helpers import make_test_article
 
 
 def test_clean_article():

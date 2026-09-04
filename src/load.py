@@ -1,9 +1,10 @@
-import psycopg
 import time
 
+import psycopg
+
+import src.common_util as cu
 from src.logger import get_logger
 from src.models import Article
-import src.common_util as cu
 
 logger = get_logger(__name__)
 

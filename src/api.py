@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
+
 from src.routers import articles
-from pydantic import BaseModel
 
 
 def ensure_database_connection() -> bool:

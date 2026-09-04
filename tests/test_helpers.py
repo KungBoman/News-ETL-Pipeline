@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from src.models import Article
 
@@ -7,7 +7,7 @@ def make_test_article(
     source="SVT",
     title="Test article",
     url="https://example.com",
-    published_at=datetime(2026, 9, 2),
+    published_at=datetime(2026, 9, 2, tzinfo=timezone.utc),
 ) -> Article:
     return {
         "source": source,

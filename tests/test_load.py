@@ -1,10 +1,8 @@
-import pytest
-
-from datetime import datetime
 from unittest.mock import MagicMock
 
+import pytest
+
 from src.load import load_article, load_articles
-from src.models import Article
 from tests.test_helpers import make_test_article
 
 

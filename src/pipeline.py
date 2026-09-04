@@ -1,8 +1,8 @@
 from src.config import RSS_SOURCES
 from src.extract import extract_rss
+from src.load import load_articles, try_create_connection
 from src.transform import transform_articles
 from src.validate import validate_articles
-from src.load import try_create_connection, load_articles
 
 
 def run_pipeline() -> dict[str, int]:

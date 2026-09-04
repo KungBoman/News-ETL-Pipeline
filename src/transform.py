@@ -1,5 +1,6 @@
-import feedparser
 from datetime import datetime, timezone
+
+import feedparser
 
 from src.models import Article
 

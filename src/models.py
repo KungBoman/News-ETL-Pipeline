@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TypedDict, NotRequired
+from typing import NotRequired, TypedDict
 
 
 class Article(TypedDict):

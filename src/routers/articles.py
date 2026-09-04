@@ -3,7 +3,7 @@ Endpoints for browsing and fetching articles.
 """
 
 from datetime import datetime
-import psycopg
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 

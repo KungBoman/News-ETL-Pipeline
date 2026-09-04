@@ -1,5 +1,4 @@
 from src.validate import validate_article
-from src.models import Article
 from tests.test_helpers import make_test_article
 
 
