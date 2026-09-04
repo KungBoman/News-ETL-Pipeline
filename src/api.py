@@ -2,7 +2,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.routers import articles
+from src.routers import (
+    articles,
+    health,
+)
 
 
 def ensure_database_connection() -> bool:
@@ -21,6 +24,7 @@ app = FastAPI(
 )
 
 app.include_router(articles.router)
+app.include_router(health.router)
 
 
 @app.get("/")
@@ -30,5 +34,6 @@ def root():
         "docs": "/docs",
         "endpoints": {
             "articles": "/articles",
+            "health": "/health",
         }
     }
