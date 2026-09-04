@@ -8,6 +8,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: news_test
+          POSTGRES_USER: news_user
+          POSTGRES_PASSWORD: news_password
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U news_user -d news_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -26,4 +40,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5433
+          DB_NAME: news_test
+          DB_USER: news_user
+          DB_PASSWORD: news_password
         run: pytest
