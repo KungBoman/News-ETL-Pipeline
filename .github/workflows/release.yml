@@ -33,10 +33,10 @@ jobs:
 
             - name: Create artifact
               run: |
-                  zip -r news-etl.zip . \
-                    -x ".git/*" \
-                    -x ".env" \
-                    -x "__pycache__/*" \
+                  zip -r news-etl.zip .  \
+                    -x ".git/*"          \
+                    -x ".env"            \
+                    -x "__pycache__/*"   \
                     -x "*/__pycache__/*" \
                     -x ".pytest_cache/*"
 
