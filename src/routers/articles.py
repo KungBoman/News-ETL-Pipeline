@@ -8,6 +8,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from src.load import try_create_connection
+from src.repository.articles import get_articles
 
 
 class ArticleResponse(BaseModel):
@@ -26,27 +27,11 @@ router = APIRouter(prefix="/articles", tags=["articles"])
 
 
 @router.get("/get")
-def get_articles() -> list[ArticleResponse]:
+def get_articles_endpoint() -> list[ArticleResponse]:
     connection = try_create_connection()
 
     try:
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT
-                    id,
-                    source,
-                    title,
-                    description,
-                    url,
-                    published_at,
-                    author,
-                    category,
-                    is_politics_related
-                FROM articles
-                ORDER BY published_at DESC
-            """)
-
-            rows = cursor.fetchall()
+        rows = get_articles(connection)
 
         return [
             ArticleResponse(
