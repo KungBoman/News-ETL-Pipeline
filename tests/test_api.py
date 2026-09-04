@@ -78,7 +78,7 @@ def test_get_articles_with_filter(mock_get_articles, mock_connection):
 
     mock_get_articles.assert_called_once_with(
         connection,
-        limit=10,
+        limit=20,
         offset=0,
         source="SVT",
         is_politics_related=True,
