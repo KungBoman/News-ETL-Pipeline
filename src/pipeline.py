@@ -1,17 +1,27 @@
 from src.config import RSS_SOURCES
 from src.extract import extract_rss
 from src.load import load_articles, try_create_connection
+from src.logger import get_logger
+from src.models import Article
 from src.transform import transform_articles
 from src.validate import validate_articles
 
+logger = get_logger(__name__)
+
 
 def run_pipeline() -> dict[str, int]:
-    articles = []
+    articles: list[Article] = []
 
     for source in RSS_SOURCES:
-        source_articles = extract_rss(source["url"], source["name"])
-
-        articles.extend(source_articles)
+        try:
+            source_articles = extract_rss(source["url"], source["name"])
+            articles.extend(source_articles)
+        except Exception:
+            logger.exception(
+                f"Failed to extract articles from {source['name']}. "
+                "Continuing with remaining sources."
+            )
+            continue
 
     extracted_count = len(articles)
 
