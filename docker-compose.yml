@@ -11,5 +11,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
 
+  postgres-test:
+    image: postgres:18
+    container_name: news-etl-postgres-test
+    environment:
+      POSTGRES_DB: news_test
+      POSTGRES_USER: news_user
+      POSTGRES_PASSWORD: news_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql
+
 volumes:
   postgres_data:
+  postgres_test_data:
