@@ -5,8 +5,6 @@ import feedparser  # type: ignore[import-untyped]
 from src.logger import get_logger
 from src.models import Article
 
-SVT_RSS_URL = "http://www.svt.se/nyheter/sverige/rss.xml"
-
 logger = get_logger(__name__)
 
 
@@ -32,9 +30,9 @@ def extract_rss(url: str, source: str) -> list[Article]:
         articles: list[Article] = []
 
         for entry in feed.entries:
-            publisheld_at = parse_published_at(entry)
+            published_at = parse_published_at(entry)
 
-            if publisheld_at is None:
+            if published_at is None:
                 logger.warning(f"Skipping article from {source}: missing published_at")
                 continue
 
@@ -44,7 +42,7 @@ def extract_rss(url: str, source: str) -> list[Article]:
                     "title": entry.get("title"),
                     "description": entry.get("description"),
                     "url": entry.get("link"),
-                    "published_at": publisheld_at,
+                    "published_at": published_at,
                     "author": entry.get("author"),
                     "category": entry.get("category"),
                 }
