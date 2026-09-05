@@ -72,3 +72,37 @@ def get_article_by_id(
     with connection.cursor() as cursor:
         cursor.execute(query, (article_id,))
         return cursor.fetchone()
+
+
+def get_article_stats(connection: psycopg.Connection) -> dict:
+    query = """
+        SELECT
+            COUNT(*) AS total_articles,
+            COUNT(*) FILTER (
+                WHERE is_politics_related = TRUE
+            ) AS politics_related
+        FROM articles
+    """
+
+    source_query = """
+        SELECT source, COUNT(*)
+        FROM articles
+        GROUP BY source
+        ORDER BY COUNT(*) DESC
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        total_row = cursor.fetchone()
+
+        cursor.execute(source_query)
+        source_rows = cursor.fetchall()
+
+    if total_row is None:
+        raise RuntimeError("Failed to fetch article statistics")
+
+    return {
+        "total_articles": total_row[0],
+        "politics_related": total_row[1],
+        "articles_by_source": {row[0]: row[1] for row in source_rows},
+    }

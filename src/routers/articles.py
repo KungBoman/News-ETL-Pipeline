@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from src.load import try_create_connection
 from src.repository.articles import (
     get_article_by_id,
+    get_article_stats,
     get_articles,
 )
 
@@ -25,6 +26,12 @@ class ArticleResponse(BaseModel):
     author: str | None
     category: str | None
     is_politics_related: bool
+
+
+class ArticleStatsResponse(BaseModel):
+    total_articles: int
+    politics_related: int
+    articles_by_source: dict[str, int]
 
 
 router = APIRouter(prefix="/articles", tags=["articles"])
@@ -62,6 +69,24 @@ def get_articles_endpoint(
             )
             for row in rows
         ]
+
+    except psycopg.Error:
+        raise HTTPException(
+            status_code=500,
+            detail="Database error",
+        )
+
+    finally:
+        connection.close()
+
+
+@router.get("/stats")
+def get_article_stats_endpoint() -> ArticleStatsResponse:
+    connection = try_create_connection()
+
+    try:
+        stats = get_article_stats(connection)
+        return ArticleStatsResponse(**stats)
 
     except psycopg.Error:
         raise HTTPException(

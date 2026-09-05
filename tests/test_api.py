@@ -99,6 +99,55 @@ def test_get_articles_returns_500_on_database_error(
 
 
 @patch("src.routers.articles.try_create_connection")
+@patch("src.routers.articles.get_article_stats")
+def test_get_article_stats(mock_get_article_stats, mock_connection):
+    connection = MagicMock()
+    mock_connection.return_value = connection
+
+    mock_get_article_stats.return_value = {
+        "total_articles": 3,
+        "politics_related": 2,
+        "articles_by_source": {
+            "SVT": 2,
+            "Aftonbladet": 1,
+        },
+    }
+
+    response = client.get("/articles/stats")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "total_articles": 3,
+        "politics_related": 2,
+        "articles_by_source": {
+            "SVT": 2,
+            "Aftonbladet": 1,
+        },
+    }
+
+    mock_get_article_stats.assert_called_once_with(connection)
+    connection.close.assert_called_once()
+
+
+@patch("src.routers.articles.try_create_connection")
+@patch("src.routers.articles.get_article_stats")
+def test_get_article_stats_returns_500_on_database_error(
+    mock_get_article_stats,
+    mock_connection,
+):
+    connection = MagicMock()
+    mock_connection.return_value = connection
+
+    mock_get_article_stats.side_effect = psycopg.Error("Database error")
+
+    response = client.get("/articles/stats")
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Database error"}
+    connection.close.assert_called_once()
+
+
+@patch("src.routers.articles.try_create_connection")
 @patch("src.routers.articles.get_article_by_id")
 def test_get_article(mock_get_article, mock_connection):
     connection = MagicMock()

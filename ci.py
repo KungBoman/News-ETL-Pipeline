@@ -33,7 +33,7 @@ def wait_for_api(url: str, timeout: int = 30) -> None:
 
     while time.time() - start < timeout:
         try:
-            with urlopen(url, timeout=2):
+            with urlopen(url, timeout=5):
                 print("✓ API is running")
                 return
         except (URLError, RemoteDisconnected):
@@ -66,7 +66,7 @@ def main() -> None:
 
         wait_for_api("http://localhost:8000/health")
 
-        print("Swagger: http://localhost:8000/docs")
+        print("Swagger: http://localhost:8000/docs\n")
 
 
 if __name__ == "__main__":

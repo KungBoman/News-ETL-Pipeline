@@ -1,5 +1,6 @@
 from src.repository.articles import (
     get_article_by_id,
+    get_article_stats,
     get_articles,
 )
 
@@ -69,3 +70,14 @@ def test_get_article_by_id_not_found(db_connection):
     )
 
     assert article is None
+
+
+def test_get_article_stats(db_connection):
+    stats = get_article_stats(db_connection)
+
+    assert stats["total_articles"] == 3
+    assert stats["politics_related"] == 2
+    assert stats["articles_by_source"] == {
+        "SVT": 2,
+        "Aftonbladet": 1,
+    }
