@@ -73,11 +73,19 @@ def test_extract_rss_feedparser_error():
 
 
 def test_all_rss_sources():
+    successful_sources = 0
+
     for source in RSS_SOURCES:
         articles = extract_rss(
             source["url"],
             source["name"],
         )
 
-        assert len(articles) > 0
+        if len(articles) > 0:
+            successful_sources += 1
+
         assert all(article["source"] == source["name"] for article in articles)
+
+    assert successful_sources == len(RSS_SOURCES), (
+        f"Only {successful_sources}/{len(RSS_SOURCES)} RSS sources returned articles"
+    )

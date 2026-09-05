@@ -22,12 +22,18 @@ def parse_image_url(entry) -> str | None:
     for link in entry.get("links", []):
         if link.get("type", "").startswith("image/"):
             return link.get("href")
+
+    for media in entry.get("media_content", []):
+        if media.get("url"):
+            return media.get("url")
+
     return None
 
 
 def parse_author_info(entry, field: str) -> str | None:
     for author in entry.get("authors", []):
         return author.get(field)
+
     return None
 
 

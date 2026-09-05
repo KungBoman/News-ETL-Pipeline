@@ -2,6 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from src.config import RSS_SOURCES
 from src.pipeline import run_pipeline
 from tests.helpers import make_test_article
 
@@ -36,13 +37,13 @@ def test_run_pipeline():
         stats = run_pipeline()
 
         assert stats == {
-            "extracted": 8,
+            "extracted": 2 * len(RSS_SOURCES),
             "transformed": 2,
             "valid": 2,
             "loaded": 2,
         }
 
-        assert mock_extract.call_count == 4
+        assert mock_extract.call_count == len(RSS_SOURCES)
         mock_transform.assert_called_once()
         mock_validate.assert_called_once()
         mock_load.assert_called_once()
@@ -60,9 +61,7 @@ def test_run_pipeline_continues_when_source_extraction_fails():
             "src.pipeline.extract_rss",
             side_effect=[
                 Exception("SVT unavailable"),
-                [article],
-                [article],
-                [article],
+                *([[article] for _ in range(len(RSS_SOURCES) - 1)]),
             ],
         ) as mock_extract,
         patch(
@@ -83,15 +82,15 @@ def test_run_pipeline_continues_when_source_extraction_fails():
         ) as mock_load,
     ):
         stats = run_pipeline()
-
+        print(stats)
         assert stats == {
-            "extracted": 3,
+            "extracted": len(RSS_SOURCES) - 1,
             "transformed": 1,
             "valid": 1,
             "loaded": 1,
         }
 
-        assert mock_extract.call_count == 4
+        assert mock_extract.call_count == len(RSS_SOURCES)
         mock_transform.assert_called_once()
         mock_validate.assert_called_once()
         mock_load.assert_called_once()
@@ -125,7 +124,7 @@ def test_run_pipeline_tracks_success(
     stats = run_pipeline()
 
     assert stats == {
-        "extracted": 4,
+        "extracted": len(RSS_SOURCES),
         "transformed": 1,
         "valid": 1,
         "loaded": 2,
@@ -166,7 +165,7 @@ def test_run_pipeline_tracks_failure(
 
     assert mock_finish_run.call_args.args[1] == 42
     assert mock_finish_run.call_args.args[3] == "failed"
-    assert mock_finish_run.call_args.args[4] == 4
+    assert mock_finish_run.call_args.args[4] == len(RSS_SOURCES)
     assert mock_finish_run.call_args.args[5] is None
     assert mock_finish_run.call_args.args[6] is None
     assert mock_finish_run.call_args.args[7] is None
