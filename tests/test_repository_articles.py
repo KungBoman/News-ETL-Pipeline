@@ -48,7 +48,7 @@ def test_get_articles_with_politics_filter(db_connection):
     )
 
     assert len(articles) == 2
-    assert all(article[8] is True for article in articles)
+    assert all(article[10] is True for article in articles)
 
 
 def test_get_article_by_id(db_connection):

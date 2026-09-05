@@ -81,8 +81,8 @@ Required fields are:
 
 - `source`
 - `title`
-- `url`
 - `published_at`
+- `text_url`
 
 Invalid articles are excluded from the load stage.
 

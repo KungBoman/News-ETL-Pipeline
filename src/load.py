@@ -61,17 +61,19 @@ def load_article(
         INSERT INTO articles (
             source,
             title,
-            summary,
-            url,
             published_at,
-            author,
+            text_url,
+            image_url,
+            summary,
+            author_name,
+            author_email,
             category,
             is_politics_related
         )
         VALUES (
-            %s, %s, %s, %s, %s, %s, %s, %s
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
         )
-        ON CONFLICT (url) DO NOTHING
+        ON CONFLICT (text_url) DO NOTHING
         RETURNING id
     """
 
@@ -81,12 +83,14 @@ def load_article(
             (
                 article["source"],
                 article["title"],
-                article["summary"],
-                article["url"],
                 article["published_at"],
-                article["author"],
-                article["category"],
-                article["is_politics_related"],
+                article["text_url"],
+                article["image_url"],
+                article["summary"],
+                article["author_name"],
+                article["author_email"],
+                article.get("category"),
+                article.get("is_politics_related"),
             ),
         )
 

@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-
 from src.transform import (
     clean_article,
     deduplicate_articles,
@@ -14,56 +12,44 @@ def test_clean_article():
     article = {
         "title": "  Test article  ",
         "summary": "  Test summary  ",
-        "url": " https://example.com ",
-        "author": None,
-        "category": "",
+        "text_url": " https://example.com ",
+        "author_name": None,
     }
 
     result = clean_article(article)
 
     assert result["title"] == "Test article"
     assert result["summary"] == "Test summary"
-    assert result["url"] == "https://example.com"
-    assert result["author"] is None
-    assert result["category"] is None
+    assert result["text_url"] == "https://example.com"
+    assert result["author_name"] is None
 
 
 def test_clean_article_handles_optional_fields():
     article = make_test_article()
-    article["author"] = "  Test Author  "
-    article["category"] = "  Great category  "
+    article["author_name"] = "  Test Author  "
+    article["author_email"] = "  Test Email  "
 
     result = clean_article(article)
 
-    assert result["author"] == "Test Author"
-    assert result["category"] == "Great category"
+    assert result["author_name"] == "Test Author"
+    assert result["author_email"] == "Test Email"
 
 
 def test_clean_article_handles_missing_optional_fields():
     article = make_test_article()
     article["summary"] = None
-    article["author"] = None
-    article["category"] = None
+    article["author_name"] = None
+    article["author_email"] = None
 
     result = clean_article(article)
 
     assert result["summary"] is None
-    assert result["author"] is None
-    assert result["category"] is None
+    assert result["author_name"] is None
+    assert result["author_email"] is None
 
 
 def test_standardize_article():
-    article = make_test_article(
-        published_at=datetime(
-            2026,
-            9,
-            2,
-            16,
-            29,
-            5,
-            tzinfo=timezone.utc,
-        )
-    )
+    article = make_test_article()
 
     result = standardize_article(article)
 
@@ -71,10 +57,10 @@ def test_standardize_article():
 
 
 def test_enrich_article():
-    article = {
-        "title": "Regeringen presenterar nytt förslag",
-        "summary": "Statsministern kommenterar förslaget.",
-    }
+    article = make_test_article(
+        title="Regeringen presenterar nytt förslag",
+    )
+    article["summary"] = "Statsministern kommenterar förslaget"
 
     result = enrich_article(article)
 
@@ -82,10 +68,10 @@ def test_enrich_article():
 
 
 def test_enrich_article_not_politics_related():
-    article = {
-        "title": "Ny AI-modell lanserad",
-        "summary": "Företaget presenterar sin nya modell.",
-    }
+    article = make_test_article(
+        title="Ny AI-modell lanserad",
+    )
+    article["summary"] = "Företaget presenterar sin nya modell"
 
     result = enrich_article(article)
 
@@ -94,27 +80,27 @@ def test_enrich_article_not_politics_related():
 
 def test_deduplicate_articles():
     articles = [
-        make_test_article(url="https://example.com/1"),
-        make_test_article(url="https://example.com/1"),
-        make_test_article(url="https://example.com/2"),
+        make_test_article(text_url="https://example.com/1"),
+        make_test_article(text_url="https://example.com/1"),
+        make_test_article(text_url="https://example.com/2"),
     ]
 
     result = deduplicate_articles(articles)
 
     assert len(result) == 2
-    assert result[0]["url"] == "https://example.com/1"
-    assert result[1]["url"] == "https://example.com/2"
+    assert result[0]["text_url"] == "https://example.com/1"
+    assert result[1]["text_url"] == "https://example.com/2"
 
 
 def test_transform_articles():
     articles = [
         make_test_article(
             title="  Regeringen presenterar förslag  ",
-            url=" https://example.com/1 ",
+            text_url=" https://example.com/1 ",
         ),
         make_test_article(
             title="Duplicate article",
-            url=" https://example.com/1 ",
+            text_url=" https://example.com/1 ",
         ),
     ]
 
@@ -122,5 +108,5 @@ def test_transform_articles():
 
     assert len(result) == 1
     assert result[0]["title"] == "Regeringen presenterar förslag"
-    assert result[0]["url"] == "https://example.com/1"
+    assert result[0]["text_url"] == "https://example.com/1"
     assert result[0]["is_politics_related"] is True

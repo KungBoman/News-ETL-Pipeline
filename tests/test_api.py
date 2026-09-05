@@ -36,6 +36,14 @@ def test_get_articles(mock_connection):
     assert articles[0]["id"] == 1
     assert articles[0]["source"] == "SVT"
     assert articles[0]["title"] == "Test article"
+    assert articles[0]["published_at"] == "2026-09-02T10:00:00Z"
+    assert articles[0]["text_url"] == "https://example.com"
+    assert articles[0]["image_url"] is None
+    assert articles[0]["summary"] is None
+    assert articles[0]["author_name"] is None
+    assert articles[0]["author_email"] is None
+    assert articles[0]["category"] is None
+    assert articles[0]["is_politics_related"] is False
 
 
 @patch("src.routers.articles.try_create_connection")
@@ -164,6 +172,14 @@ def test_get_article(mock_get_article, mock_connection):
     assert article["id"] == 1
     assert article["source"] == "SVT"
     assert article["title"] == "Test article"
+    assert article["published_at"] == "2026-09-02T10:00:00Z"
+    assert article["text_url"] == "https://example.com"
+    assert article["image_url"] is None
+    assert article["summary"] is None
+    assert article["author_name"] is None
+    assert article["author_email"] is None
+    assert article["category"] is None
+    assert article["is_politics_related"] is False
 
 
 @patch("src.routers.articles.try_create_connection")

@@ -2,25 +2,26 @@ from src.models import Article
 
 
 def clean_article(article: Article) -> Article:
+    # TODO: check up if we actually prefer to reference the copy or the parameter throughout the function
     cleaned_article = article.copy()
 
     cleaned_article["title"] = cleaned_article["title"].strip()
-    cleaned_article["url"] = cleaned_article["url"].strip()
+    cleaned_article["text_url"] = cleaned_article["text_url"].strip()
 
     summary = cleaned_article.get("summary")
     if isinstance(summary, str):
         summary = summary.strip()
     cleaned_article["summary"] = summary or None
 
-    author = cleaned_article.get("author")
-    if isinstance(author, str):
-        author = author.strip()
-    cleaned_article["author"] = author or None
+    author_name = cleaned_article.get("author_name")
+    if isinstance(author_name, str):
+        author_name = author_name.strip()
+    cleaned_article["author_name"] = author_name or None
 
-    category = cleaned_article.get("category")
-    if isinstance(category, str):
-        category = category.strip()
-    cleaned_article["category"] = category or None
+    author_email = cleaned_article.get("author_email")
+    if isinstance(author_email, str):
+        author_email = author_email.strip()
+    cleaned_article["author_email"] = author_email or None
 
     return cleaned_article
 
@@ -65,10 +66,10 @@ def deduplicate_articles(articles: list[Article]) -> list[Article]:
     unique_articles = []
 
     for article in articles:
-        url = article["url"]
+        text_url = article["text_url"]
 
-        if url not in seen_urls:
-            seen_urls.add(url)
+        if text_url not in seen_urls:
+            seen_urls.add(text_url)
             unique_articles.append(article)
 
     return unique_articles

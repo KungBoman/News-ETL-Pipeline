@@ -18,6 +18,14 @@ def test_load_article():
     cursor.execute.assert_called_once()
     connection.commit.assert_called_once()
 
+    query, params = cursor.execute.call_args.args
+
+    assert "text_url" in query
+    assert "image_url" in query
+    assert "author_name" in query
+    assert "author_email" in query
+    assert params[3] == article["text_url"]
+
 
 def test_load_article_without_commit():
     connection = MagicMock()
@@ -59,8 +67,8 @@ def test_load_articles_skips_duplicates():
     connection = MagicMock()
 
     articles = [
-        make_test_article(url="https://example.com/1"),
-        make_test_article(url="https://example.com/2"),
+        make_test_article(text_url="https://example.com/1"),
+        make_test_article(text_url="https://example.com/2"),
     ]
 
     with patch(

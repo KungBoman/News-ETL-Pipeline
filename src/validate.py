@@ -8,8 +8,8 @@ def validate_article(article: Article) -> bool:
     required_fields = [
         "source",
         "title",
-        "url",
         "published_at",
+        "text_url",
     ]
 
     for field in required_fields:

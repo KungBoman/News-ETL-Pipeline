@@ -18,6 +18,19 @@ def parse_published_at(entry) -> datetime | None:
     return None
 
 
+def parse_image_url(entry) -> str | None:
+    for link in entry.get("links", []):
+        if link.get("type", "").startswith("image/"):
+            return link.get("href")
+    return None
+
+
+def parse_author_info(entry, field: str) -> str | None:
+    for author in entry.get("authors", []):
+        return author.get(field)
+    return None
+
+
 def extract_rss(url: str, source: str) -> list[Article]:
     logger.info(f"Starting extraction from {source}...")
 
@@ -40,11 +53,12 @@ def extract_rss(url: str, source: str) -> list[Article]:
                 {
                     "source": source,
                     "title": entry.get("title"),
-                    "summary": entry.get("summary"),
-                    "url": entry.get("link"),
                     "published_at": published_at,
-                    "author": entry.get("author"),
-                    "category": entry.get("category"),
+                    "text_url": entry.get("link"),
+                    "image_url": parse_image_url(entry),
+                    "summary": entry.get("summary"),
+                    "author_name": parse_author_info(entry, "name"),
+                    "author_email": parse_author_info(entry, "email"),
                 }
             )
 

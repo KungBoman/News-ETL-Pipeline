@@ -20,10 +20,12 @@ class ArticleResponse(BaseModel):
     id: int
     source: str
     title: str
-    summary: str | None
-    url: str
     published_at: datetime
-    author: str | None
+    text_url: str
+    image_url: str | None
+    summary: str | None
+    author_name: str | None
+    author_email: str | None
     category: str | None
     is_politics_related: bool
 
@@ -60,12 +62,14 @@ def get_articles_endpoint(
                 id=row[0],
                 source=row[1],
                 title=row[2],
-                summary=row[3],
-                url=row[4],
-                published_at=row[5],
-                author=row[6],
-                category=row[7],
-                is_politics_related=row[8],
+                published_at=row[3],
+                text_url=row[4],
+                image_url=row[5],
+                summary=row[6],
+                author_name=row[7],
+                author_email=row[8],
+                category=row[9],
+                is_politics_related=row[10],
             )
             for row in rows
         ]
@@ -115,12 +119,14 @@ def get_article_by_id_endpoint(article_id: int) -> ArticleResponse:
             id=row[0],
             source=row[1],
             title=row[2],
-            summary=row[3],
-            url=row[4],
-            published_at=row[5],
-            author=row[6],
-            category=row[7],
-            is_politics_related=row[8],
+            published_at=row[3],
+            text_url=row[4],
+            image_url=row[5],
+            summary=row[6],
+            author_name=row[7],
+            author_email=row[8],
+            category=row[9],
+            is_politics_related=row[10],
         )
 
     except psycopg.Error:

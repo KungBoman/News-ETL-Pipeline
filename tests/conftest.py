@@ -52,10 +52,12 @@ def _insert_table(cursor):
         INSERT INTO articles (
             source,
             title,
-            summary,
-            url,
             published_at,
-            author,
+            text_url,
+            image_url,
+            summary,
+            author_name,
+            author_email,
             category,
             is_politics_related
         )
@@ -63,9 +65,11 @@ def _insert_table(cursor):
             (
                 'SVT',
                 'Test article 1',
-                'Test summary 1',
-                'https://example.com/test-1',
                 '2026-09-04T10:00:00+00:00',
+                'https://example.com/test-1',
+                NULL,
+                'Test summary 1',
+                NULL,
                 NULL,
                 NULL,
                 FALSE
@@ -73,9 +77,11 @@ def _insert_table(cursor):
             (
                 'SVT',
                 'Test article 2',
-                'Test summary 2',
-                'https://example.com/test-2',
                 '2026-09-04T09:00:00+00:00',
+                'https://example.com/test-2',
+                NULL,
+                'Test summary 2',
+                NULL,
                 NULL,
                 NULL,
                 TRUE
@@ -83,9 +89,11 @@ def _insert_table(cursor):
             (
                 'Aftonbladet',
                 'Test article 3',
-                'Test summary 3',
-                'https://example.com/test-3',
                 '2026-09-04T08:00:00+00:00',
+                'https://example.com/test-3',
+                NULL,
+                'Test summary 3',
+                NULL,
                 NULL,
                 NULL,
                 TRUE

@@ -8,8 +8,8 @@ from tests.helpers import make_test_article
 
 def test_run_pipeline():
     articles = [
-        make_test_article(url="https://example.com/1"),
-        make_test_article(url="https://example.com/2"),
+        make_test_article(text_url="https://example.com/1"),
+        make_test_article(text_url="https://example.com/2"),
     ]
 
     mock_connection = MagicMock()

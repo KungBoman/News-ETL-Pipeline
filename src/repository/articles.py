@@ -13,17 +13,18 @@ def get_articles(
             id,
             source,
             title,
-            summary,
-            url,
             published_at,
-            author,
+            text_url,
+            image_url,
+            summary,
+            author_name,
+            author_email,
             category,
             is_politics_related
         FROM articles
     """
 
     params: list[str | bool | int] = []
-
     conditions = []
 
     if source:
@@ -59,10 +60,12 @@ def get_article_by_id(
             id,
             source,
             title,
-            summary,
-            url,
             published_at,
-            author,
+            text_url,
+            image_url,
+            summary,
+            author_name,
+            author_email,
             category,
             is_politics_related
         FROM articles

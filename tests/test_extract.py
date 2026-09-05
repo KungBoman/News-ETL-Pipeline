@@ -19,9 +19,19 @@ def test_extract_rss():
                 "title": "Test article",
                 "summary": "Test summary",
                 "link": "https://example.com",
+                "links": [
+                    {
+                        "type": "image/jpeg",
+                        "href": "https://example.com/image.jpg",
+                    }
+                ],
                 "published_parsed": (2026, 9, 2, 16, 29, 5),
-                "author": "Test Author",
-                "category": "News",
+                "authors": [
+                    {
+                        "name": "Test Author",
+                        "email": "test@example.com",
+                    }
+                ],
             }
         ]
     )
@@ -33,7 +43,10 @@ def test_extract_rss():
     assert result[0]["source"] == "Test Source"
     assert result[0]["title"] == "Test article"
     assert result[0]["summary"] == "Test summary"
-    assert result[0]["url"] == "https://example.com"
+    assert result[0]["text_url"] == "https://example.com"
+    assert result[0]["image_url"] == "https://example.com/image.jpg"
+    assert result[0]["author_name"] == "Test Author"
+    assert result[0]["author_email"] == "test@example.com"
 
 
 def test_extract_rss_without_published_at():
@@ -48,7 +61,7 @@ def test_extract_rss_without_published_at():
     assert result == []
 
 
-def test_extract_rss_invalid_source():
+def test_extract_rss_feedparser_error():
     with (
         patch(
             "src.extract.feedparser.parse",
