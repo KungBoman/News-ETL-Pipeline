@@ -1,13 +1,45 @@
 import argparse
 import subprocess
+import time
+from http.client import RemoteDisconnected
+from urllib.error import URLError
+from urllib.request import urlopen
 
 
-def run_step(name: str, command: list[str]) -> None:
+def run_step(
+    name: str,
+    command: list[str],
+    quiet: bool = False,
+    message: str | None = None,
+) -> None:
     print(f"\n=== {name} ===")
 
-    subprocess.run(command, check=True)
+    if message:
+        print(message)
+
+    subprocess.run(
+        command,
+        check=True,
+        stdout=subprocess.DEVNULL if quiet else None,
+    )
 
     print(f"✓ {name} passed")
+
+
+def wait_for_api(url: str, timeout: int = 30) -> None:
+    print("\n=== Waiting for API ===")
+
+    start = time.time()
+
+    while time.time() - start < timeout:
+        try:
+            with urlopen(url, timeout=2):
+                print("✓ API is running")
+                return
+        except (URLError, RemoteDisconnected):
+            time.sleep(1)
+
+    raise RuntimeError(f"API did not become available within {timeout} seconds")
 
 
 def main() -> None:
@@ -28,7 +60,12 @@ def main() -> None:
         run_step(
             "Docker",
             ["docker", "compose", "up", "-d", "--build"],
+            quiet=True,
+            message="Building and starting containers...",
         )
+
+        wait_for_api("http://localhost:8000/health")
+
         print("\nSwagger: http://localhost:8000/docs")
 
 
