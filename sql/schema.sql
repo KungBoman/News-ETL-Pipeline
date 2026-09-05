@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS articles;
+DROP TABLE IF EXISTS pipeline_runs;
+
 
 CREATE TABLE IF NOT EXISTS articles (
     id SERIAL PRIMARY KEY,
