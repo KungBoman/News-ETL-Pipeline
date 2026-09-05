@@ -1,3 +1,4 @@
+import pprint
 import sys
 
 import feedparser  # type: ignore[import-untyped]
@@ -10,6 +11,7 @@ def main() -> None:
 
     print(f"Feed title: {feed.feed.get('title')}")
     print(f"Entries: {len(feed.entries)}")
+
     if not feed.entries:
         raise SystemExit("No entries found")
 
@@ -22,6 +24,9 @@ def main() -> None:
     print("\nFirst article:")
     for key, value in entry.items():
         print(f"\n- {key}:\n{value}")
+
+    print("\nCopy-paste entry:")
+    pprint.pprint(dict(entry), sort_dicts=False)
 
 
 if __name__ == "__main__":
