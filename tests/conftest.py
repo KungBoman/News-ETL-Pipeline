@@ -1,5 +1,9 @@
+from pathlib import Path
+
 import psycopg
 import pytest
+
+SCHEMA_PATH = Path(__file__).parent.parent / "sql" / "schema.sql"
 
 
 @pytest.fixture
@@ -35,21 +39,7 @@ def db_connection(monkeypatch):
 
 
 def _create_table(cursor):
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS articles (
-            id SERIAL PRIMARY KEY,
-            source TEXT NOT NULL,
-            title TEXT NOT NULL,
-            summary TEXT,
-            url TEXT UNIQUE NOT NULL,
-            published_at TIMESTAMPTZ NOT NULL,
-            author TEXT,
-            category TEXT,
-            is_politics_related BOOLEAN NOT NULL
-        );
-        """
-    )
+    cursor.execute(SCHEMA_PATH.read_text())
 
 
 def _truncate_table(cursor):

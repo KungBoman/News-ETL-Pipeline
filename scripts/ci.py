@@ -54,7 +54,6 @@ def main() -> None:
     run_step("Ruff", ["ruff", "check", "."])
     run_step("Mypy src", ["mypy", "src"])
     run_step("Mypy tests", ["mypy", "tests"])
-    run_step("Tests", ["pytest", "-q"])
 
     if args.docker:
         run_step(
@@ -67,6 +66,8 @@ def main() -> None:
         wait_for_api("http://localhost:8000/health")
 
         print("Swagger: http://localhost:8000/docs\n")
+
+    run_step("Tests", ["pytest", "-q"])
 
 
 if __name__ == "__main__":
