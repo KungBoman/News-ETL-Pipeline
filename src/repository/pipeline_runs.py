@@ -65,3 +65,30 @@ def finish_pipeline_run(
         )
 
     connection.commit()
+
+
+def get_pipeline_runs(
+    connection: psycopg.Connection,
+    limit: int,
+    offset: int,
+) -> list[tuple]:
+    query = """
+        SELECT
+            id,
+            started_at,
+            finished_at,
+            status,
+            extracted,
+            transformed,
+            valid,
+            loaded,
+            error
+        FROM pipeline_runs
+        ORDER BY started_at DESC
+        LIMIT %s
+        OFFSET %s
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, (limit, offset))
+        return cursor.fetchall()

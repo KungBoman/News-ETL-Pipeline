@@ -5,7 +5,7 @@ from fastapi import FastAPI
 
 from src.load import create_connection
 from src.logger import get_logger
-from src.routers import articles, health
+from src.routers import articles, health, pipeline_runs
 
 logger = get_logger(__name__)
 
@@ -42,6 +42,7 @@ app = FastAPI(
 
 app.include_router(articles.router)
 app.include_router(health.router)
+app.include_router(pipeline_runs.router)
 
 
 @app.get("/")
@@ -52,5 +53,6 @@ def root():
         "endpoints": {
             "articles": "/articles",
             "health": "/health",
+            "pipeline-runs": "/pipeline-runs",
         },
     }

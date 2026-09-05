@@ -6,6 +6,7 @@ import pytest
 from src.repository.pipeline_runs import (
     create_pipeline_run,
     finish_pipeline_run,
+    get_pipeline_runs,
 )
 
 
@@ -77,3 +78,32 @@ def test_finish_pipeline_run_with_error():
 
     cursor.execute.assert_called_once()
     connection.commit.assert_called_once()
+
+
+def test_get_pipeline_runs():
+    connection = MagicMock()
+    cursor = connection.cursor.return_value.__enter__.return_value
+
+    expected = [
+        (
+            2,
+            datetime.now(timezone.utc),
+            datetime.now(timezone.utc),
+            "success",
+            201,
+            185,
+            42,
+            None,
+        )
+    ]
+
+    cursor.fetchall.return_value = expected
+
+    result = get_pipeline_runs(
+        connection,
+        limit=20,
+        offset=0,
+    )
+
+    assert result == expected
+    cursor.execute.assert_called_once()
