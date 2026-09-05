@@ -7,10 +7,10 @@ def clean_article(article: Article) -> Article:
     cleaned_article["title"] = cleaned_article["title"].strip()
     cleaned_article["url"] = cleaned_article["url"].strip()
 
-    description = cleaned_article.get("description")
-    if isinstance(description, str):
-        description = description.strip()
-    cleaned_article["description"] = description or None
+    summary = cleaned_article.get("summary")
+    if isinstance(summary, str):
+        summary = summary.strip()
+    cleaned_article["summary"] = summary or None
 
     author = cleaned_article.get("author")
     if isinstance(author, str):
@@ -37,7 +37,7 @@ def enrich_article(article: Article) -> Article:
             None,
             [
                 enriched_article["title"],
-                enriched_article["description"],
+                enriched_article["summary"],
             ],
         )
     ).lower()

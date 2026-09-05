@@ -65,7 +65,7 @@ This allows articles from different RSS sources to pass through the same downstr
 
 ### Enrich
 
-Articles are enriched with an `is_politics_related` flag based on keyword matching in the article title and description.
+Articles are enriched with an `is_politics_related` flag based on keyword matching in the article title and summary.
 
 ### Deduplicate
 

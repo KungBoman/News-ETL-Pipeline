@@ -12,7 +12,7 @@ def make_test_article(
     return {
         "source": source,
         "title": title,
-        "description": "Test description",
+        "summary": "Test summary",
         "url": url,
         "published_at": published_at,
         "author": None,
@@ -32,7 +32,7 @@ def make_article_row(
         article_id,
         source,
         title,
-        "Test description",
+        "Test summary",
         url,
         published_at,
         None,

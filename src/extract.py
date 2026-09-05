@@ -40,7 +40,7 @@ def extract_rss(url: str, source: str) -> list[Article]:
                 {
                     "source": source,
                     "title": entry.get("title"),
-                    "description": entry.get("description"),
+                    "summary": entry.get("summary"),
                     "url": entry.get("link"),
                     "published_at": published_at,
                     "author": entry.get("author"),

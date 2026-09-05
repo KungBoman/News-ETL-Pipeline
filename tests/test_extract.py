@@ -17,7 +17,7 @@ def test_extract_rss():
         [
             {
                 "title": "Test article",
-                "description": "Test description",
+                "summary": "Test summary",
                 "link": "https://example.com",
                 "published_parsed": (2026, 9, 2, 16, 29, 5),
                 "author": "Test Author",
@@ -32,7 +32,7 @@ def test_extract_rss():
     assert len(result) == 1
     assert result[0]["source"] == "Test Source"
     assert result[0]["title"] == "Test article"
-    assert result[0]["description"] == "Test description"
+    assert result[0]["summary"] == "Test summary"
     assert result[0]["url"] == "https://example.com"
 
 

@@ -5,7 +5,7 @@ from typing import NotRequired, TypedDict
 class Article(TypedDict):
     source: str
     title: str
-    description: str | None
+    summary: str | None
     url: str
     published_at: datetime
     author: str | None

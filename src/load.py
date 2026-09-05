@@ -61,7 +61,7 @@ def load_article(
         INSERT INTO articles (
             source,
             title,
-            description,
+            summary,
             url,
             published_at,
             author,
@@ -81,7 +81,7 @@ def load_article(
             (
                 article["source"],
                 article["title"],
-                article["description"],
+                article["summary"],
                 article["url"],
                 article["published_at"],
                 article["author"],

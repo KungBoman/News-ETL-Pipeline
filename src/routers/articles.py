@@ -20,7 +20,7 @@ class ArticleResponse(BaseModel):
     id: int
     source: str
     title: str
-    description: str | None
+    summary: str | None
     url: str
     published_at: datetime
     author: str | None
@@ -60,7 +60,7 @@ def get_articles_endpoint(
                 id=row[0],
                 source=row[1],
                 title=row[2],
-                description=row[3],
+                summary=row[3],
                 url=row[4],
                 published_at=row[5],
                 author=row[6],
@@ -115,7 +115,7 @@ def get_article_by_id_endpoint(article_id: int) -> ArticleResponse:
             id=row[0],
             source=row[1],
             title=row[2],
-            description=row[3],
+            summary=row[3],
             url=row[4],
             published_at=row[5],
             author=row[6],

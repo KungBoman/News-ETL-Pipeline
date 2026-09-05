@@ -13,7 +13,7 @@ from tests.helpers import make_test_article
 def test_clean_article():
     article = {
         "title": "  Test article  ",
-        "description": "  Some description  ",
+        "summary": "  Test summary  ",
         "url": " https://example.com ",
         "author": None,
         "category": "",
@@ -22,7 +22,7 @@ def test_clean_article():
     result = clean_article(article)
 
     assert result["title"] == "Test article"
-    assert result["description"] == "Some description"
+    assert result["summary"] == "Test summary"
     assert result["url"] == "https://example.com"
     assert result["author"] is None
     assert result["category"] is None
@@ -41,13 +41,13 @@ def test_clean_article_handles_optional_fields():
 
 def test_clean_article_handles_missing_optional_fields():
     article = make_test_article()
-    article["description"] = None
+    article["summary"] = None
     article["author"] = None
     article["category"] = None
 
     result = clean_article(article)
 
-    assert result["description"] is None
+    assert result["summary"] is None
     assert result["author"] is None
     assert result["category"] is None
 
@@ -73,7 +73,7 @@ def test_standardize_article():
 def test_enrich_article():
     article = {
         "title": "Regeringen presenterar nytt förslag",
-        "description": "Statsministern kommenterar förslaget.",
+        "summary": "Statsministern kommenterar förslaget.",
     }
 
     result = enrich_article(article)
@@ -84,7 +84,7 @@ def test_enrich_article():
 def test_enrich_article_not_politics_related():
     article = {
         "title": "Ny AI-modell lanserad",
-        "description": "Företaget presenterar sin nya modell.",
+        "summary": "Företaget presenterar sin nya modell.",
     }
 
     result = enrich_article(article)
