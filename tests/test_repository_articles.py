@@ -39,16 +39,16 @@ def test_get_articles_with_source_filter(db_connection):
     assert all(article[1] == "SVT" for article in articles)
 
 
-def test_get_articles_with_politics_filter(db_connection):
+def test_get_articles_with_category_filter(db_connection):
     articles = get_articles(
         db_connection,
         limit=10,
         offset=0,
-        is_politics_related=True,
+        category="politics",
     )
 
     assert len(articles) == 2
-    assert all(article[10] is True for article in articles)
+    assert all(article[9] == "politics" for article in articles)
 
 
 def test_get_article_by_id(db_connection):

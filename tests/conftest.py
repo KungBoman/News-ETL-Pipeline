@@ -58,8 +58,7 @@ def _insert_table(cursor):
             summary,
             author_name,
             author_email,
-            category,
-            is_politics_related
+            category
         )
         VALUES
             (
@@ -71,8 +70,7 @@ def _insert_table(cursor):
                 'Test summary 1',
                 NULL,
                 NULL,
-                NULL,
-                FALSE
+                'other'
             ),
             (
                 'SVT',
@@ -83,8 +81,7 @@ def _insert_table(cursor):
                 'Test summary 2',
                 NULL,
                 NULL,
-                NULL,
-                TRUE
+                'politics'
             ),
             (
                 'Aftonbladet',
@@ -95,8 +92,7 @@ def _insert_table(cursor):
                 'Test summary 3',
                 NULL,
                 NULL,
-                NULL,
-                TRUE
+                'politics'
             );
         """
     )

@@ -64,7 +64,7 @@ def test_enrich_article():
 
     result = enrich_article(article)
 
-    assert result["is_politics_related"] is True
+    assert result["category"] == "politics"
 
 
 def test_enrich_article_not_politics_related():
@@ -75,7 +75,7 @@ def test_enrich_article_not_politics_related():
 
     result = enrich_article(article)
 
-    assert result["is_politics_related"] is False
+    assert result["category"] != "politics"
 
 
 def test_deduplicate_articles():
@@ -109,4 +109,4 @@ def test_transform_articles():
     assert len(result) == 1
     assert result[0]["title"] == "Regeringen presenterar förslag"
     assert result[0]["text_url"] == "https://example.com/1"
-    assert result[0]["is_politics_related"] is True
+    assert result[0]["category"] == "politics"

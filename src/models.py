@@ -12,4 +12,3 @@ class Article(TypedDict):
     author_name: str | None
     author_email: str | None
     category: NotRequired[str | None]
-    is_politics_related: NotRequired[bool]

@@ -43,7 +43,6 @@ def test_get_articles(mock_connection):
     assert articles[0]["author_name"] is None
     assert articles[0]["author_email"] is None
     assert articles[0]["category"] is None
-    assert articles[0]["is_politics_related"] is False
 
 
 @patch("src.routers.articles.try_create_connection")
@@ -63,28 +62,6 @@ def test_get_articles_with_pagination(mock_get_articles, mock_connection):
         limit=10,
         offset=20,
         source=None,
-        is_politics_related=None,
-    )
-
-
-@patch("src.routers.articles.try_create_connection")
-@patch("src.routers.articles.get_articles")
-def test_get_articles_with_filter(mock_get_articles, mock_connection):
-    connection = MagicMock()
-    mock_connection.return_value = connection
-
-    mock_get_articles.return_value = []
-
-    response = client.get("/articles/?source=SVT&is_politics_related=true")
-
-    assert response.status_code == 200
-
-    mock_get_articles.assert_called_once_with(
-        connection,
-        limit=20,
-        offset=0,
-        source="SVT",
-        is_politics_related=True,
     )
 
 
@@ -179,7 +156,6 @@ def test_get_article(mock_get_article, mock_connection):
     assert article["author_name"] is None
     assert article["author_email"] is None
     assert article["category"] is None
-    assert article["is_politics_related"] is False
 
 
 @patch("src.routers.articles.try_create_connection")

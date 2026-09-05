@@ -6,7 +6,7 @@ def get_articles(
     limit: int,
     offset: int,
     source: str | None = None,
-    is_politics_related: bool | None = None,
+    category: str | None = None,
 ) -> list[tuple]:
     query = """
         SELECT
@@ -19,8 +19,7 @@ def get_articles(
             summary,
             author_name,
             author_email,
-            category,
-            is_politics_related
+            category
         FROM articles
     """
 
@@ -31,9 +30,9 @@ def get_articles(
         conditions.append("source = %s")
         params.append(source)
 
-    if is_politics_related is not None:
-        conditions.append("is_politics_related = %s")
-        params.append(is_politics_related)
+    if category is not None:
+        conditions.append("category = %s")
+        params.append(category)
 
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
@@ -66,8 +65,7 @@ def get_article_by_id(
             summary,
             author_name,
             author_email,
-            category,
-            is_politics_related
+            category
         FROM articles
         WHERE id = %s
     """
@@ -82,7 +80,7 @@ def get_article_stats(connection: psycopg.Connection) -> dict:
         SELECT
             COUNT(*) AS total_articles,
             COUNT(*) FILTER (
-                WHERE is_politics_related = TRUE
+                WHERE category = 'politics'
             ) AS politics_related
         FROM articles
     """

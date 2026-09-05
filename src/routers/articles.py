@@ -27,7 +27,6 @@ class ArticleResponse(BaseModel):
     author_name: str | None
     author_email: str | None
     category: str | None
-    is_politics_related: bool
 
 
 class ArticleStatsResponse(BaseModel):
@@ -44,7 +43,6 @@ def get_articles_endpoint(
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     source: str | None = None,
-    is_politics_related: bool | None = None,
 ) -> list[ArticleResponse]:
     connection = try_create_connection()
 
@@ -54,7 +52,6 @@ def get_articles_endpoint(
             limit=limit,
             offset=offset,
             source=source,
-            is_politics_related=is_politics_related,
         )
 
         return [
@@ -69,7 +66,6 @@ def get_articles_endpoint(
                 author_name=row[7],
                 author_email=row[8],
                 category=row[9],
-                is_politics_related=row[10],
             )
             for row in rows
         ]
@@ -126,7 +122,6 @@ def get_article_by_id_endpoint(article_id: int) -> ArticleResponse:
             author_name=row[7],
             author_email=row[8],
             category=row[9],
-            is_politics_related=row[10],
         )
 
     except psycopg.Error:

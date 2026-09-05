@@ -39,5 +39,4 @@ def make_article_row(
         None,  # author_name
         None,  # author_email
         None,  # category
-        False,  # is_politics_related
     )

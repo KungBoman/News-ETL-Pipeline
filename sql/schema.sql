@@ -12,8 +12,7 @@ CREATE TABLE IF NOT EXISTS articles (
     summary TEXT,
     author_name TEXT,
     author_email TEXT,
-    category TEXT,
-    is_politics_related BOOLEAN NOT NULL
+    category TEXT
 );
 
 CREATE TABLE IF NOT EXISTS pipeline_runs (

@@ -39,24 +39,57 @@ def enrich_article(article: Article) -> Article:
             [
                 enriched_article["title"],
                 enriched_article["summary"],
+                enriched_article["text_url"],
             ],
         )
     ).lower()
 
-    politics_keywords = [
-        "val",
-        "regering",
-        "riksdag",
-        "parti",
-        "minister",
-        "statsminister",
-        "politiker",
-        "politik",
-    ]
+    category_keywords = {
+        "politics": [
+            "val",
+            "regering",
+            "riksdag",
+            "parti",
+            "minister",
+            "statsminister",
+            "politiker",
+            "politik",
+        ],
+        "sport": [
+            "fotboll",
+            "hockey",
+            "ishockey",
+            "sport",
+            "match",
+            "landslag",
+            "allsvenskan",
+        ],
+        "economy": [
+            "ekonomi",
+            "börsen",
+            "ränta",
+            "inflation",
+            "företag",
+            "aktie",
+        ],
+        "technology": [
+            "teknik",
+            "ai",
+            "artificiell intelligens",
+            "apple",
+            "google",
+            "microsoft",
+        ],
+    }
 
-    enriched_article["is_politics_related"] = any(
-        keyword in text for keyword in politics_keywords
-    )
+    category = "other"
+
+    for name, keywords in category_keywords.items():
+        if any(keyword in text for keyword in keywords):
+            category = name
+            break
+
+    enriched_article["category"] = category
 
     return enriched_article
 

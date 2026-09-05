@@ -46,14 +46,3 @@ def test_get_articles_with_source_filter_integration(db_connection):
 
     assert len(articles) == 2
     assert all(article["source"] == "SVT" for article in articles)
-
-
-def test_get_articles_with_politics_filter_integration(db_connection):
-    response = client.get("/articles/?is_politics_related=true")
-
-    assert response.status_code == 200
-
-    articles = response.json()
-
-    assert len(articles) == 2
-    assert all(article["is_politics_related"] is True for article in articles)

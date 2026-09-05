@@ -67,11 +67,10 @@ def load_article(
             summary,
             author_name,
             author_email,
-            category,
-            is_politics_related
+            category
         )
         VALUES (
-            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            %s, %s, %s, %s, %s, %s, %s, %s, %s
         )
         ON CONFLICT (text_url) DO NOTHING
         RETURNING id
@@ -90,7 +89,6 @@ def load_article(
                 article["author_name"],
                 article["author_email"],
                 article.get("category"),
-                article.get("is_politics_related"),
             ),
         )
 
