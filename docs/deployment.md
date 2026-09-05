@@ -37,7 +37,7 @@ Check the running containers:
 docker compose ps
 ```
 
-The API is then available at:
+The API is available at:
 
 ```text
 http://localhost:8000
@@ -104,57 +104,39 @@ ghcr.io/kungboman/news-etl-api:latest
 
 This makes it possible to run either a specific version or the latest release.
 
-## CI/CD Deployment Flow
+## CI/CD
 
-The project uses GitHub Actions for automated testing and delivery.
+GitHub Actions is used for automated testing, Docker builds, scheduled pipeline execution, and releases.
 
-Normal development:
+### Continuous Integration
 
-```text
-Pull Request
-     ↓
-    CI
-     ↓
-   Tests
-```
+Pull requests and pushes to `main` run the CI workflow.
 
-Changes merged to `main`:
+The workflow:
 
-```text
-Push to main
-     ↓
-    CI
-     ↓
-   Tests
-     ↓
-Docker build
-```
+1. Starts a PostgreSQL test database
+2. Installs the Python dependencies
+3. Runs Ruff
+4. Runs mypy
+5. Runs the test suite with coverage
+6. Builds the Docker image
 
-Creating a version tag:
+### Scheduled Pipeline
 
-```text
-Create v* tag
-     ↓
-Release workflow
-     ↓
-   Tests
-     ↓
-Docker build
-     ↓
-Push image to GHCR
-     ↓
-GitHub Release
-```
+The ETL pipeline runs automatically on a daily schedule using GitHub Actions.
 
-The release workflow therefore only publishes an image after the test suite has passed.
+The workflow:
 
-## Versioned Releases
+1. Starts PostgreSQL
+2. Applies the database schema
+3. Runs the ETL pipeline
+4. Stores the resulting articles in PostgreSQL
 
-Releases are created using Git tags following the versioning convention:
+The workflow can also be triggered manually.
 
-```text
-vMAJOR.MINOR.PATCH
-```
+### Releases
+
+Creating a Git tag following the `vMAJOR.MINOR.PATCH` format triggers the release workflow.
 
 Example:
 
@@ -163,14 +145,53 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-The tag triggers the release workflow.
+The release workflow:
 
-Version tags are immutable references to specific Git commits, which makes it possible to identify exactly which version of the source code produced a Docker image or release artifact.
+1. Runs the test suite
+2. Builds the Docker image
+3. Pushes the versioned image to GHCR
+4. Updates the `latest` image tag
+5. Creates a GitHub Release
+6. Publishes the source artifact
+
+The release workflow only publishes artifacts after the tests have passed.
+
+## Local CI
+
+The project also includes `ci.py` for running the core quality checks locally before pushing changes.
+
+Run:
+
+```bash
+python ci.py
+```
+
+This runs:
+
+1. Ruff
+2. Mypy for `src`
+3. Mypy for `tests`
+4. Pytest
+
+To also verify the Docker environment:
+
+```bash
+python ci.py --docker
+```
+
+This additionally:
+
+1. Builds the Docker image
+2. Starts the Docker Compose services
+3. Waits for the API health endpoint
+4. Prints the Swagger URL
+
+This provides a local verification step before changes are pushed to GitHub.
 
 ## Production Deployment
 
-The current project focuses on containerization and automated delivery rather than deployment to a specific cloud provider.
+The project currently focuses on containerization and automated delivery rather than deployment to a specific cloud provider.
 
-The Docker image published to GHCR can be used as the deployment artifact for a future hosting environment.
+The Docker image published to GHCR is the deployment artifact and can be used by a future hosting environment.
 
 This keeps the application deployment-independent and allows the same image to be deployed to different container platforms.

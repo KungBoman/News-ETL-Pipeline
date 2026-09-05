@@ -66,7 +66,7 @@ def main() -> None:
 
         wait_for_api("http://localhost:8000/health")
 
-        print("\nSwagger: http://localhost:8000/docs")
+        print("Swagger: http://localhost:8000/docs")
 
 
 if __name__ == "__main__":

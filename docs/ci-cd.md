@@ -1,6 +1,6 @@
 # CI/CD
 
-The project uses GitHub Actions to automate testing, pipeline execution, Docker builds, and releases.
+The project uses GitHub Actions to automate code quality checks, testing, ETL execution, Docker builds, and releases.
 
 ## Workflows
 
@@ -16,6 +16,12 @@ The project contains three GitHub Actions workflows:
 
 Each workflow has a separate responsibility.
 
+| Workflow | Trigger | Responsibility |
+|---|---|---|
+| `ci.yml` | Pull requests, pushes to `main`, manual | Quality checks, tests, Docker build |
+| `pipeline.yml` | Scheduled, manual | ETL pipeline execution |
+| `release.yml` | Version tags | Build and publish release artifacts |
+
 ## Continuous Integration
 
 The CI workflow runs automatically for:
@@ -28,17 +34,21 @@ It can also be triggered manually.
 The workflow:
 
 1. Checks out the repository
-2. Sets up Python
+2. Sets up Python 3.12
 3. Installs dependencies
 4. Starts a temporary PostgreSQL test service
-5. Runs the complete pytest suite
-6. Builds the Docker image
+5. Runs Ruff
+6. Runs mypy
+7. Runs pytest with coverage
+8. Builds the Docker image
 
-This ensures that changes are tested before they are merged and that the application can be containerized successfully.
+Database-dependent tests run against the temporary PostgreSQL service.
+
+This ensures that changes pass the quality checks and test suite before they are merged.
 
 ## Scheduled Pipeline
 
-The pipeline workflow runs the ETL pipeline automatically on a schedule.
+The pipeline workflow runs the ETL pipeline automatically once per day.
 
 It can also be triggered manually.
 
@@ -55,7 +65,7 @@ The scheduled workflow uses the same pipeline entry point as local execution:
 python main.py
 ```
 
-This keeps the scheduled execution consistent with the local application.
+This keeps scheduled execution consistent with local execution.
 
 ## Release Workflow
 
@@ -72,12 +82,17 @@ git push origin v1.0.0
 
 The release workflow:
 
-1. Runs the test suite
-2. Builds the Docker image
-3. Logs in to GitHub Container Registry
-4. Publishes the Docker image to GHCR
-5. Creates a GitHub Release
-6. Attaches the project artifact to the release
+1. Checks out the tagged version
+2. Starts a temporary PostgreSQL test service
+3. Installs dependencies
+4. Runs the test suite
+5. Builds the Docker image
+6. Logs in to GitHub Container Registry
+7. Publishes the Docker image to GHCR
+8. Creates a GitHub Release
+9. Attaches the project artifact to the release
+
+The release workflow only publishes artifacts after the tests have passed.
 
 ## Docker Image Tags
 
@@ -117,19 +132,21 @@ Pull Request
      ↓
     CI
      ↓
-   Tests
+Ruff → Mypy → Pytest → Docker build
 
 Push to main
      ↓
     CI
      ↓
-   Tests → Docker build
+Ruff → Mypy → Pytest → Docker build
 
 Scheduled execution
      ↓
   Pipeline
      ↓
-    ETL → PostgreSQL
+    ETL
+     ↓
+ PostgreSQL
 
 Version tag
      ↓
@@ -137,9 +154,11 @@ Version tag
      ↓
    Tests
      ↓
-   Docker → GHCR
+ Docker build
+     ↓
+   GHCR
      ↓
 GitHub Release
 ```
 
-This separation keeps the CI workflow focused on code quality while the release workflow handles versioned delivery.
+This separation keeps continuous integration, scheduled data processing, and release delivery independent from each other.

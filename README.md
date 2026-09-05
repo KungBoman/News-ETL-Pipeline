@@ -1,6 +1,8 @@
 # Swedish News ETL Pipeline
 
-A Python ETL pipeline that collects Swedish news articles from multiple RSS feeds, processes and validates the data, stores it in PostgreSQL, and exposes it through a FastAPI REST API.
+A Python-based ETL pipeline that collects Swedish news articles from multiple RSS feeds, transforms and validates the data, stores it in PostgreSQL, and exposes it through a FastAPI REST API.
+
+The project demonstrates a complete data engineering workflow including data ingestion, transformation, validation, database persistence, API development, testing, containerization, and CI/CD.
 
 ## Architecture
 
@@ -18,28 +20,31 @@ flowchart TD
 ## Features
 
 - Extracts articles from multiple Swedish RSS sources
-- Cleans, standardizes and enriches article data
-- Detects politics-related articles
+- Cleans and standardizes article data
+- Enriches articles with politics-related classification
 - Deduplicates articles by URL
 - Validates required fields
-- Stores data in PostgreSQL
-- REST API with FastAPI and Swagger
-- Automated testing with pytest
-- Ruff linting and mypy type checking
+- Stores articles in PostgreSQL
+- Tracks ETL pipeline executions
+- REST API with pagination and filtering
+- Interactive Swagger/OpenAPI documentation
+- Unit, repository, API, and integration tests
 - Test coverage with pytest-cov
-- Dockerized application
+- Ruff linting and mypy type checking
+- Dockerized application and databases
 - GitHub Actions CI/CD
-- Scheduled ETL pipeline
-- Versioned releases and Docker images
+- Scheduled ETL execution
+- Versioned Docker images and GitHub Releases
 
 ## Tech Stack
 
-- Python
+- Python 3.12
 - PostgreSQL
 - FastAPI
 - Uvicorn
-- Docker
+- Docker / Docker Compose
 - pytest
+- pytest-cov
 - Ruff
 - mypy
 - GitHub Actions
@@ -51,7 +56,7 @@ flowchart TD
 
 Create a `.env` file:
 
-```bash
+```env
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=news
@@ -83,18 +88,22 @@ pip install -r requirements.txt
 python main.py
 ```
 
-### 6. Run the tests
+### 6. Run tests
 
 ```bash
 pytest
 ```
 
-### 7. Run quality checks
+### 7. Run local CI
 
 ```bash
-ruff check .
-mypy tests
-mypy src
+python ci.py
+```
+
+To also build and verify the Docker environment:
+
+```bash
+python ci.py --docker
 ```
 
 ## API
@@ -107,22 +116,38 @@ Swagger documentation:
 http://localhost:8000/docs
 ```
 
-Available endpoints:
+### Endpoints
 
-- `GET /articles/`
-- `GET /articles/{id}`
-- `GET /health`
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/articles/` | List articles with pagination and filters |
+| GET | `/articles/{id}` | Get an article by ID |
+| GET | `/pipeline-runs/` | List ETL pipeline executions |
+| GET | `/health` | Check API and database health |
+
+Example:
+
+```text
+GET /articles/?source=SVT&is_politics_related=true
+```
 
 ## CI/CD
 
 GitHub Actions provides:
 
-- Automated linting
-- Static type checking
-- Test execution and coverage
+- Automated linting and type checking
+- Automated tests and coverage
 - Docker image builds
-- Scheduled ETL pipeline runs
-- Versioned releases
+- Scheduled ETL pipeline execution
+- Versioned Docker images
+- GitHub Releases
+
+Releases are created using version tags:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## Documentation
 
