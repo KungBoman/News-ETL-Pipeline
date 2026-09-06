@@ -32,10 +32,6 @@ RSS_SOURCES = [
         "url": "https://www.na.se/feeds/feed.xml",
     },
     {
-        "name": "Hallandsposten",
-        "url": "https://www.hallandsposten.se/rss",
-    },
-    {
         "name": "Arbetarbladet",
         "url": "https://www.arbetarbladet.se/feeds/feed.xml",
     },
