@@ -19,8 +19,8 @@ Each workflow has a separate responsibility.
 | Workflow | Trigger | Responsibility |
 |---|---|---|
 | `ci.yml` | Pull requests, pushes to `main`, manual | Quality checks, tests, Docker build |
-| `pipeline.yml` | Scheduled, manual | ETL pipeline execution |
-| `release.yml` | Version tags | Build and publish release artifacts |
+| `pipeline.yml` | Scheduled, manual | Test and production ETL execution |
+| `release.yml` | Version tags | Test, build, publish Docker image, create release |
 
 ## Continuous Integration
 
@@ -48,24 +48,62 @@ This ensures that changes pass the quality checks and test suite before they are
 
 ## Scheduled Pipeline
 
-The pipeline workflow runs the ETL pipeline automatically once per day.
+The pipeline workflow runs the ETL process automatically once per day.
 
 It can also be triggered manually.
 
-The workflow:
+The workflow is split into two jobs:
 
-1. Starts a temporary PostgreSQL database
+```text
+Scheduled / Manual
+       ↓
+ Pipeline Test
+       ↓
+   ETL against
+ temporary PostgreSQL
+       ↓
+   succeeds?
+      / \
+    yes  no
+     ↓    ↓
+Production  Stop
+ Pipeline
+     ↓
+Render PostgreSQL
+```
+
+### Pipeline Test
+
+The first job runs the ETL pipeline against a temporary PostgreSQL database provided by GitHub Actions.
+
+It:
+
+1. Starts PostgreSQL
 2. Installs dependencies
 3. Creates the database schema
 4. Runs the ETL pipeline
 
-The scheduled workflow uses the same pipeline entry point as local execution:
+The same `main.py` entry point is used for the test execution as for local execution.
 
-```bash
-python main.py
-```
+If the test job fails, the production job is not executed.
 
-This keeps scheduled execution consistent with local execution.
+### Production Pipeline
+
+The production job only runs after the pipeline test succeeds.
+
+It:
+
+1. Checks out the repository
+2. Sets up Python 3.12
+3. Installs dependencies
+4. Connects to the production PostgreSQL database on Render
+5. Runs `python main.py`
+6. Loads the processed articles into the production database
+7. Records the pipeline execution in `pipeline_runs`
+
+Production database credentials are stored as GitHub Actions secrets.
+
+This provides a basic deployment safety mechanism where the production ETL pipeline is only executed after the test pipeline has completed successfully.
 
 ## Release Workflow
 
@@ -107,7 +145,7 @@ The version-specific tag makes it possible to run a known release, while `latest
 
 ## Test Database in CI
 
-Database-dependent tests use a temporary PostgreSQL service provided by GitHub Actions.
+Database-dependent tests use temporary PostgreSQL services provided by GitHub Actions.
 
 The CI environment uses:
 
@@ -122,6 +160,18 @@ DB_PASSWORD=news_password
 The test database is separate from the development database.
 
 This allows repository and API integration tests to run against a real PostgreSQL instance without depending on an external database.
+
+The scheduled pipeline also uses a temporary PostgreSQL database for its pipeline test job before running the production ETL.
+
+## Production Database
+
+The production ETL pipeline connects to the Render PostgreSQL database using credentials stored in GitHub Actions Secrets.
+
+GitHub Actions connects using Render's external PostgreSQL connection.
+
+The deployed FastAPI application uses the Render internal database connection.
+
+This keeps production database credentials out of the source code and allows the scheduled pipeline to load data into the production database securely.
 
 ## Workflow Separation
 
@@ -140,13 +190,19 @@ Push to main
      ↓
 Ruff → Mypy → Pytest → Docker build
 
-Scheduled execution
+Scheduled / Manual
      ↓
-  Pipeline
+ Pipeline
      ↓
-    ETL
+Pipeline Test
      ↓
- PostgreSQL
+Temporary PostgreSQL
+     ↓
+    success
+     ↓
+Production Pipeline
+     ↓
+Render PostgreSQL
 
 Version tag
      ↓
@@ -161,4 +217,4 @@ Version tag
 GitHub Release
 ```
 
-This separation keeps continuous integration, scheduled data processing, and release delivery independent from each other.
+This separation keeps continuous integration, scheduled data processing, and release delivery independent from each other while still providing a controlled path to the production database.

@@ -6,7 +6,7 @@ The test suite is divided into different levels to verify both individual compon
 
 ## Test Structure
 
-```text id="3czj6d"
+```text id="j0x9e7"
 tests/
 ├── test_helpers.py
 ├── test_common_util.py
@@ -15,11 +15,15 @@ tests/
 ├── test_transform.py
 ├── test_validate.py
 ├── test_load.py
+├── test_pipeline.py
 │
 ├── test_api.py
 ├── test_repository_articles.py
 ├── test_repository_pipeline_runs.py
-└── test_api_integration.py
+├── test_api_integration.py
+│
+└── test_parsers/
+    └── test_svt.py
 ```
 
 ## Unit Tests
@@ -49,7 +53,7 @@ These tests cover functionality such as:
 - Fetching articles
 - Pagination
 - Filtering by source
-- Filtering by politics-related status
+- Filtering by category
 - Fetching an article by ID
 - Handling missing articles
 - Creating and updating pipeline runs
@@ -63,7 +67,7 @@ Integration tests verify the API together with the real PostgreSQL test database
 
 For example, an API request such as:
 
-```text
+```text id="8s0a0e"
 GET /articles/?source=SVT
 ```
 
@@ -71,11 +75,25 @@ is executed against the test database and the returned JSON response is verified
 
 These tests provide confidence that the API, repository layer, database connection, SQL queries, and response models work together correctly.
 
+## Pipeline Tests
+
+Pipeline tests verify the complete ETL orchestration and pipeline run tracking.
+
+The tests cover scenarios such as:
+
+- Successful pipeline execution
+- Failed RSS source extraction
+- Failed pipeline execution
+- Pipeline run status updates
+- Extracted, transformed, valid, and loaded article counts
+
+External RSS extraction and database loading are mocked where appropriate so that pipeline orchestration can be tested independently.
+
 ## Test Database
 
 The test environment uses a separate PostgreSQL instance:
 
-```text
+```text id="z4dbn7"
 Host: localhost
 Port: 5433
 Database: news_test
@@ -83,7 +101,7 @@ Database: news_test
 
 The development database uses port `5432`.
 
-The test database is prepared before integration tests by:
+The test database is prepared before database-dependent tests by:
 
 1. Creating the required database tables
 2. Clearing existing test data
@@ -99,7 +117,7 @@ The project uses `pytest-cov` to measure test coverage.
 
 Coverage is reported for the `src` package:
 
-```bash
+```bash id="h4fsn4"
 pytest --cov=src --cov-report=term-missing
 ```
 
@@ -115,19 +133,19 @@ The goal is not to achieve 100% coverage at any cost, but to ensure that importa
 
 Run the complete test suite with:
 
-```bash
+```bash id="0a8o0j"
 pytest
 ```
 
 Tests can also be run against a specific file:
 
-```bash
+```bash id="v4yr9t"
 pytest tests/test_transform.py
 ```
 
 Or a specific test:
 
-```bash
+```bash id="9fy1hx"
 pytest tests/test_transform.py::test_clean_article
 ```
 
@@ -137,33 +155,38 @@ The project includes a local CI script that runs the main quality checks before 
 
 Run:
 
-```bash
-python ci.py
+```bash id="b1u5j2"
+python scripts/ci.py
 ```
 
 This runs:
 
 1. Ruff
-2. Mypy
-3. Pytest
+2. Mypy for `src`
+3. Mypy for `tests`
+4. Pytest
 
 To also verify the Docker environment:
 
-```bash
-python ci.py --docker
+```bash id="4wqg8g"
+python scripts/ci.py --docker
 ```
 
 This additionally builds the Docker image, starts the services, and verifies that the API health endpoint becomes available.
 
 ## CI Testing
 
-GitHub Actions runs the complete test suite automatically.
+GitHub Actions runs the test suite automatically through the CI workflow.
 
 The CI environment starts a temporary PostgreSQL service and provides the test database configuration through environment variables.
 
-This means that the same database-dependent tests can be executed in CI without relying on an external database.
+This means that database-dependent tests can be executed in CI without relying on an external database.
 
-The release workflow also runs the test suite before publishing the Docker image or creating the release artifacts.
+The scheduled pipeline also starts a temporary PostgreSQL database and runs the ETL pipeline against it before the production job is allowed to run.
+
+If the pipeline test job fails, the production ETL job is skipped.
+
+The release workflow also runs the test suite before publishing the Docker image or creating release artifacts.
 
 ## Testing Strategy
 
@@ -172,5 +195,7 @@ The project intentionally uses both mocked and real database tests.
 Mock-based tests are useful for fast and isolated unit testing.
 
 Real PostgreSQL tests are used where actual database behavior matters, particularly for SQL queries and API/database integration.
+
+The scheduled pipeline also performs an end-to-end ETL execution against a temporary PostgreSQL database before running the production pipeline.
 
 This provides a balance between test speed and confidence in the complete system.

@@ -4,7 +4,7 @@
 
 Swedish News ETL Pipeline is a Python-based ETL system that collects Swedish news articles from multiple RSS feeds, processes and validates the data, stores the results in PostgreSQL, and exposes the data through a REST API.
 
-The project is designed as a small but complete data engineering system covering ingestion, transformation, validation, persistence, API access, testing, containerization, and CI/CD.
+The project is designed as a small but complete data engineering system covering ingestion, transformation, enrichment, deduplication, validation, persistence, API access, testing, containerization, deployment, and CI/CD.
 
 ## System Architecture
 
@@ -22,8 +22,8 @@ flowchart TD
 The ETL pipeline processes articles through a sequence of stages:
 
 1. Extract data from RSS feeds
-2. Clean and transform the articles
-3. Enrich the article data
+2. Clean and standardize the articles
+3. Enrich the article data with categories
 4. Deduplicate articles
 5. Validate required fields
 6. Store valid articles in PostgreSQL
@@ -32,16 +32,22 @@ Each pipeline execution is also tracked in the `pipeline_runs` table.
 
 ## Extract
 
-The extract stage collects articles from multiple Swedish RSS sources.
+The extract stage collects articles from **28 working Swedish RSS sources**.
 
-Currently supported sources include:
-
-- SVT
-- Aftonbladet
-- Expressen
-- Svenska Dagbladet
+The sources include national news organizations, broadcasters, business publications, and regional newspapers.
 
 Each RSS entry is converted into a common article structure defined using Python's `TypedDict`.
+
+The common article structure contains:
+
+- Source
+- Title
+- Publication timestamp
+- Article URL
+- Image URL
+- Summary
+- Author name
+- Author email
 
 The extract stage also converts publication timestamps into timezone-aware `datetime` objects.
 
@@ -65,7 +71,17 @@ This allows articles from different RSS sources to pass through the same downstr
 
 ### Enrich
 
-Articles are enriched with an `is_politics_related` flag based on keyword matching in the article title and summary.
+Articles are enriched with a category based on keyword matching in the article title and summary.
+
+Current categories are:
+
+- `politics`
+- `sport`
+- `economy`
+- `technology`
+- `other`
+
+The category is stored in PostgreSQL and can be used by downstream consumers of the API.
 
 ### Deduplicate
 
@@ -101,7 +117,10 @@ The table includes:
 - Source and article metadata
 - Publication timestamp
 - Article URL
-- Enrichment information
+- Image URL
+- Summary
+- Author information
+- Article category
 - A unique constraint on the article URL
 
 Article inserts use PostgreSQL's `ON CONFLICT` handling to safely skip duplicates.
@@ -146,9 +165,15 @@ The article endpoint supports:
 
 - Pagination using `limit` and `offset`
 - Filtering by source
-- Filtering by `is_politics_related`
+- Filtering by category
 
 FastAPI also provides interactive OpenAPI/Swagger documentation.
+
+Production Swagger:
+
+```text
+https://news-etl-api.onrender.com/docs
+```
 
 ## Repository Layer
 
@@ -203,7 +228,45 @@ The three workflows are:
 - `pipeline.yml` — scheduled ETL execution
 - `release.yml` — versioned releases
 
+The scheduled pipeline first runs against a temporary PostgreSQL database. If the test pipeline succeeds, the production job runs the ETL pipeline against the production PostgreSQL database hosted on Render.
+
+The CI workflow and release workflow also build Docker images and validate the application before changes are released.
+
 The CI/CD architecture is documented separately in `docs/ci-cd.md`.
+
+## Deployment
+
+The production application is deployed on Render.
+
+The deployment consists of:
+
+- Render Web Service running the FastAPI application
+- Render PostgreSQL for production data
+- GitHub Actions for scheduled ETL execution
+- GitHub Container Registry for Docker images
+
+The production API is available at:
+
+```text
+https://news-etl-api.onrender.com
+```
+
+The production database is populated by the scheduled GitHub Actions pipeline.
+
+## Latest Production Run
+
+The latest successful production pipeline processed:
+
+```text
+Extracted:   1133
+Transformed: 1133
+Valid:       1133
+Loaded:      1133
+Status:      success
+Duration:    ~2m 14s
+```
+
+The pipeline run is also recorded in the `pipeline_runs` table and exposed through the REST API.
 
 ## Design Decisions
 
@@ -242,3 +305,9 @@ FastAPI provides a lightweight REST API with automatic request validation and in
 ### Docker
 
 Docker makes the application and its dependencies reproducible and allows the API and databases to run consistently across environments.
+
+### GitHub Actions
+
+GitHub Actions provides automated quality checks, scheduled production ETL execution, Docker builds, and release automation.
+
+The production pipeline is configured so that the production ETL job only runs after the pipeline test job succeeds.

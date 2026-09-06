@@ -2,6 +2,8 @@
 
 The project uses Docker to provide a reproducible runtime environment for the API and PostgreSQL.
 
+Production deployment uses Render for the API and PostgreSQL, while GitHub Actions handles automated ETL execution.
+
 ## Local Environment
 
 The Docker Compose setup contains three services:
@@ -114,7 +116,7 @@ Pull requests and pushes to `main` run the CI workflow.
 
 The workflow:
 
-1. Starts a PostgreSQL test database
+1. Starts a temporary PostgreSQL test database
 2. Installs the Python dependencies
 3. Runs Ruff
 4. Runs mypy
@@ -125,16 +127,82 @@ The workflow:
 
 The ETL pipeline runs automatically on a daily schedule using GitHub Actions.
 
-The workflow:
+The pipeline is split into two stages.
 
-1. Starts PostgreSQL
+#### Pipeline Test
+
+The first job:
+
+1. Starts a temporary PostgreSQL database
 2. Applies the database schema
+3. Runs the ETL pipeline against the test database
+
+If this job fails, the production job does not run.
+
+#### Production Pipeline
+
+After the test job succeeds, the production job:
+
+1. Installs the Python dependencies
+2. Connects to the production PostgreSQL database on Render
 3. Runs the ETL pipeline
-4. Stores the resulting articles in PostgreSQL
+4. Stores the resulting articles in the production database
+5. Records the pipeline execution in `pipeline_runs`
 
 The workflow can also be triggered manually.
 
-### Releases
+## Production Environment
+
+The production environment consists of:
+
+```text
+GitHub Actions
+      │
+      │ scheduled ETL
+      ▼
+Production ETL
+      │
+      ▼
+Render PostgreSQL
+      ▲
+      │
+Render Web Service
+      │
+      ▼
+    REST API
+```
+
+The FastAPI application is deployed as a Render Web Service.
+
+The production database is hosted using Render PostgreSQL.
+
+The production API is available at:
+
+```text
+https://news-etl-api.onrender.com
+```
+
+Swagger documentation:
+
+```text
+https://news-etl-api.onrender.com/docs
+```
+
+The production database is accessed by GitHub Actions using Render's external PostgreSQL connection.
+
+The Render Web Service uses the internal database connection available within the Render environment.
+
+## Production Database Schema
+
+The production PostgreSQL schema is created separately using:
+
+```text
+sql/schema.sql
+```
+
+Once the schema has been created, scheduled ETL executions only load and update data. The production GitHub Actions job does not recreate the schema on every run.
+
+## Releases
 
 Creating a Git tag following the `vMAJOR.MINOR.PATCH` format triggers the release workflow.
 
@@ -158,12 +226,12 @@ The release workflow only publishes artifacts after the tests have passed.
 
 ## Local CI
 
-The project also includes `ci.py` for running the core quality checks locally before pushing changes.
+The project also includes `scripts/ci.py` for running the core quality checks locally before pushing changes.
 
 Run:
 
 ```bash
-python ci.py
+python scripts/ci.py
 ```
 
 This runs:
@@ -176,7 +244,7 @@ This runs:
 To also verify the Docker environment:
 
 ```bash
-python ci.py --docker
+python scripts/ci.py --docker
 ```
 
 This additionally:
@@ -187,11 +255,3 @@ This additionally:
 4. Prints the Swagger URL
 
 This provides a local verification step before changes are pushed to GitHub.
-
-## Production Deployment
-
-The project currently focuses on containerization and automated delivery rather than deployment to a specific cloud provider.
-
-The Docker image published to GHCR is the deployment artifact and can be used by a future hosting environment.
-
-This keeps the application deployment-independent and allows the same image to be deployed to different container platforms.

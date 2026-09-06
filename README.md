@@ -2,7 +2,7 @@
 
 A Python-based ETL pipeline that collects Swedish news articles from multiple RSS feeds, transforms and validates the data, stores it in PostgreSQL, and exposes it through a FastAPI REST API.
 
-The project demonstrates a complete data engineering workflow including data ingestion, transformation, validation, database persistence, API development, testing, containerization, and CI/CD.
+The project demonstrates a complete data engineering workflow including data ingestion, transformation, validation, database persistence, API development, testing, containerization, deployment, and CI/CD.
 
 ## Architecture
 
@@ -19,9 +19,10 @@ flowchart TD
 
 ## Features
 
-- Extracts articles from multiple Swedish RSS sources
+- Extracts articles from 28 Swedish RSS sources
 - Cleans and standardizes article data
-- Enriches articles with politics-related classification
+- Enriches articles with category classification
+- Categorizes articles as politics, sport, economy, technology, or other
 - Deduplicates articles by URL
 - Validates required fields
 - Stores articles in PostgreSQL
@@ -33,8 +34,9 @@ flowchart TD
 - Ruff linting and mypy type checking
 - Dockerized application and databases
 - GitHub Actions CI/CD
-- Scheduled ETL execution
+- Scheduled production ETL execution
 - Versioned Docker images and GitHub Releases
+- Deployed API and PostgreSQL database on Render
 
 ## Tech Stack
 
@@ -49,6 +51,7 @@ flowchart TD
 - mypy
 - GitHub Actions
 - GitHub Container Registry
+- Render
 
 ## Quick Start
 
@@ -97,20 +100,28 @@ pytest
 ### 7. Run local CI
 
 ```bash
-python ci.py
+python scripts/ci.py
 ```
 
 To also build and verify the Docker environment:
 
 ```bash
-python ci.py --docker
+python scripts/ci.py --docker
 ```
 
 ## API
 
 The API runs on port `8000` when started through Docker Compose.
 
+Production API:
+
+https://news-etl-api.onrender.com
+
 Swagger documentation:
+
+https://news-etl-api.onrender.com/docs
+
+Local Swagger documentation:
 
 ```text
 http://localhost:8000/docs
@@ -125,12 +136,6 @@ http://localhost:8000/docs
 | GET | `/pipeline-runs/` | List ETL pipeline executions |
 | GET | `/health` | Check API and database health |
 
-Example:
-
-```text
-GET /articles/?source=SVT&is_politics_related=true
-```
-
 ## CI/CD
 
 GitHub Actions provides:
@@ -139,8 +144,11 @@ GitHub Actions provides:
 - Automated tests and coverage
 - Docker image builds
 - Scheduled ETL pipeline execution
+- Production database loading
 - Versioned Docker images
 - GitHub Releases
+
+The scheduled pipeline first runs the ETL pipeline against a temporary PostgreSQL database. If the pipeline succeeds, the production job runs against the Render PostgreSQL database.
 
 Releases are created using version tags:
 
@@ -148,6 +156,43 @@ Releases are created using version tags:
 git tag v1.0.0
 git push origin v1.0.0
 ```
+
+## Production
+
+The application is deployed on Render using:
+
+- Render Web Service for the FastAPI application
+- Render PostgreSQL for production data
+- GitHub Actions for scheduled ETL execution
+- GitHub Container Registry for Docker images
+
+Production API:
+
+https://news-etl-api.onrender.com
+
+The production database currently contains data from 28 working Swedish RSS sources.
+
+### Latest pipeline run
+
+```text
+Extracted:   1133
+Transformed: 1133
+Valid:       1133
+Loaded:      1133
+Status:      success
+Duration:    ~2m 14s
+```
+
+## Testing
+
+The project uses:
+
+- `pytest` for automated tests
+- `pytest-cov` for test coverage
+- `Ruff` for linting
+- `mypy` for static type checking
+
+The test suite covers extraction, transformation, validation, loading, repositories, API endpoints, parsers, and pipeline execution.
 
 ## Documentation
 
